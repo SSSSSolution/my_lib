@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(rlog)
+project(r_log)
 
 add_executable(rlog
     src/main.cpp

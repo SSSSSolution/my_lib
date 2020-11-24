@@ -4,10 +4,9 @@
 
 #define RLOG(severity, fmt, ...)                                            \
   do {                                                                      \
-    rlog::RLog::print(rlog::Severity::severity,             \
+    rlog::RLog::print(rlog::Severity::severity,                             \
       #severity, __FILE__, __FUNCTION__, __LINE__, fmt, ## __VA_ARGS__);    \
   } while(0)
-
 
 namespace rlog {
 // https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
@@ -38,8 +37,6 @@ namespace rlog {
   };
 
 }
-
-
 
 #endif // RLOG_H
 
