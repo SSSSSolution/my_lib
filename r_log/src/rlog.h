@@ -1,7 +1,8 @@
 #ifndef RLOG_H
 #define RLOG_H
+extern "C" {
 #include <stdio.h>
-
+}
 #define RLOG(severity, fmt, ...)                                            \
   do {                                                                      \
     rlog::RLog::print(rlog::Severity::severity,                             \

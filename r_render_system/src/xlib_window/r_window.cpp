@@ -2,14 +2,19 @@
  * author: wei.huang
  * date: 2020.12.6
  */
+
 #include "r_window.h"
+//#include "r_renderer.h"
 #include "rlog.h"
-#include <stdlib.h>
+
 #include <memory>
+#include <stdlib.h>
+
+extern "C" {
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
-#include <iostream>
+}
 
 namespace reality {
 
@@ -33,11 +38,15 @@ namespace r_render_system
   RWindow::RWindow()
   {
     m_impl = new RWindowImpl;
+//    RRenderer *renderer = new RRenderer();
+//    if (renderer->init())
+//    {
+//        RLOG(INFO, "init vkInstance successfull!");
+//    }
   }
 
   RWindow::~RWindow()
   {
-
   }
 
   void RWindow::init(int width, int height, int pos_x, int pos_y)
@@ -65,7 +74,7 @@ namespace r_render_system
                                            2, m_impl->m_border, m_impl->m_background);
     XSelectInput(m_impl->m_display, m_impl->m_window, ButtonPressMask|StructureNotifyMask);
 
-    std::cout << "init successfull!" << std::endl;
+//    std::cout << "init successfull!" << std::endl;
   }
 
   void RWindow::move(int pos_x, int pos_y)
@@ -82,7 +91,7 @@ namespace r_render_system
   {
     XEvent event;
     XMapWindow(m_impl->m_display, m_impl->m_window);
-    std::cout << "XMapWIndow" << std::endl;
+//    std::cout << "XMapWIndow" << std::endl;
     while(1) {
         XNextEvent(m_impl->m_display, &event);
         switch (event.type)
@@ -103,6 +112,25 @@ namespace r_render_system
 
   void RWindow::hide()
   {
+
+  }
+
+  int RWindow::width()
+  {
+      return m_impl->m_width;
+  }
+
+  int RWindow::height()
+  {
+      return m_impl->m_height;
+  }
+
+  std::shared_ptr<WindowInfo> RWindow::get_window_info()
+  {
+      std::shared_ptr<WindowInfo> window_info(new WindowInfo());
+      window_info->display = m_impl->m_display;
+      window_info->window  = m_impl->m_window;
+      return window_info;
 
   }
 }
