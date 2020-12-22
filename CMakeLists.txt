@@ -12,3 +12,4 @@ add_subdirectory(r_argument_processor)
 
 add_subdirectory(app/panda)
 
+enable_testing()
