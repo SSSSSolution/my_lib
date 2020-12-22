@@ -23,6 +23,7 @@ add_executable(panda
   src/cmd/panda_cmd.cpp
   src/cmd/plan_cmd.cpp
   src/plan_handle.cpp
+  src/util.cpp
 )
 
 target_link_libraries(panda
@@ -32,5 +33,5 @@ target_link_libraries(panda
 
 install(TARGETS
     panda
-    DESTINATION bin/${PROJECT_NAME}
+    DESTINATION bin/
 )

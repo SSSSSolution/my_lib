@@ -1,4 +1,13 @@
 #CMake
 **/build
 **/install
-MakeFile
+Makefile
+CMakeFiles
+cmake_install.cmake
+
+#QtCreator
+CMakeLists.txt.user*
+
+
+
+

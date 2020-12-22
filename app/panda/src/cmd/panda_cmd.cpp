@@ -13,6 +13,7 @@ namespace reality
 
     void PandaCommand::cmd_run()
     {
+        print_helper();
         return;
     }
 }
