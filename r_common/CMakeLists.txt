@@ -3,11 +3,13 @@ project(r_common)
 
 
 
-include_directories(include)
+include_directories(PUBLIC include)
 
 add_library(r_common
     src/dir.cpp
+    src/r_time.cpp
 )
+target_include_directories(r_common PUBLIC include)
 
 add_executable(r_time_test
     src/r_time_test.cpp

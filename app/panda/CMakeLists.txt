@@ -29,6 +29,7 @@ add_executable(panda
 target_link_libraries(panda
     r_log
     command_processor
+    r_common
 )
 
 install(TARGETS

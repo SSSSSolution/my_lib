@@ -1,4 +1,5 @@
 #include "plan_handle.h"
+#include "dir.h"
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -9,6 +10,7 @@
 #include "util.h"
 #include <fcntl.h>
 
+using namespace reality::common;
 namespace reality
 {
     static std::string get_home_dir()
@@ -63,8 +65,39 @@ namespace reality
             exit(-1);
         }
 
-//        struct stat s;
-//        lstat(m_panda_dir.c_str(), &s);
+        std::vector<std::string> plan_file_list;
+
+        std::string plan_dir;
+        plan_dir.append("/").append(m_panda_dir).append("/.plan");
+        Dir dir(plan_dir);
+
+        auto year_dirs = dir.sub_dirs();
+        for (auto y_dir : year_dirs)
+        {
+            std::string d;
+            d.append(plan_dir).append("/").append(y_dir);
+            Dir dir(d);
+
+            auto mon_dirs = dir.sub_dirs();
+            for (auto m_dir : mon_dirs)
+            {
+                std::string d;
+                d.append(plan_dir).append("/").append(y_dir).append("/").append(m_dir);
+                Dir dir(d);
+
+                auto file_plans = dir.sub_files();
+                for (auto f : file_plans)
+                {
+                    plan_file_list.push_back(f);
+                }
+            }
+        }
+
+        std::sort(plan_file_list.begin(), plan_file_list.end());
+        for (auto f : plan_file_list)
+        {
+            printf("%s\n", f.c_str());
+        }
     }
 
     void PlanHandle::before_edit_plan()
@@ -93,7 +126,7 @@ namespace reality
 
     void PlanHandle::finish_edit_plan()
     {
-        printf("Enjoy your life :)\n");
+        printf("enjoy your life :)\n");
     }
 }
 
