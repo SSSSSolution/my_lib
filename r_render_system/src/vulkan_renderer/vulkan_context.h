@@ -38,6 +38,8 @@ struct VulkanContext {
     VkQueue m_graphics_queue;
     VkQueue m_present_queue;
 
+    VkSwapchainKHR m_swapchain;
+
 };
 
 }

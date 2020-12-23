@@ -18,6 +18,7 @@
 #include "surface_initializer.h"
 #include "device_initializer.h"
 #include "command_pool_initializer.h"
+#include "swapchain_initializer.h"
 #include "command_buffer_initializer.h"
 #include "vulkan_helper.h"
 #define NUM_DESCRIPTOR_SETS 1
@@ -42,6 +43,7 @@ namespace r_render_system
         cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
         VulkanHelper::execute_begin_command_buffer(m_ctx);
         VulkanHelper::init_device_queue(m_ctx);
+        swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
 
       }
   private:
@@ -51,6 +53,7 @@ namespace r_render_system
       std::shared_ptr<DeviceInitializer> device_init;
       std::shared_ptr<CommandPoolInitializer> cmd_pool_init;
       std::shared_ptr<CommandBufferInitializer> cmd_buf_init;
+      std::shared_ptr<SwapchainInitializer> swapchain_init;
   };
 
   RRenderer::RRenderer(std::shared_ptr<RWindow> window)
