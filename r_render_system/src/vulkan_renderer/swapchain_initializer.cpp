@@ -10,6 +10,7 @@ namespace r_render_system
     {
         m_vulkan_context = vulkan_context;
         init_swapchain();
+        init_swapchain_image();
     }
 
     void SwapchainInitializer::init_swapchain()
@@ -136,6 +137,53 @@ namespace r_render_system
         res = vkCreateSwapchainKHR(m_vulkan_context->m_device, &swapchain_info, nullptr, &m_vulkan_context->m_swapchain);
         assert(res == VK_SUCCESS);
 
+
+    }
+
+    void SwapchainInitializer::init_swapchain_image()
+    {
+        uint32_t m_swapchain_image_count;
+        auto res = vkGetSwapchainImagesKHR(m_vulkan_context->m_device,
+                                      m_vulkan_context->m_swapchain,
+                                      &m_swapchain_image_count,
+                                      nullptr);
+        assert(res == VK_SUCCESS);
+
+        m_vulkan_context->m_swapchain_images.resize(m_swapchain_image_count);
+        res = vkGetSwapchainImagesKHR(m_vulkan_context->m_device,
+                                      m_vulkan_context->m_swapchain,
+                                      &m_swapchain_image_count,
+                                      m_vulkan_context->m_swapchain_images.data());
+        assert(res == VK_SUCCESS);
+
+        for (uint32_t i = 0; i < m_swapchain_image_count; ++i)
+        {
+            SwapChainBuffer  sc_buf;
+
+            VkImageViewCreateInfo view_info = {};
+            view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            view_info.pNext = nullptr;
+            view_info.format = m_vulkan_context->m_format;
+            view_info.components.r = VK_COMPONENT_SWIZZLE_R;
+            view_info.components.g = VK_COMPONENT_SWIZZLE_G;
+            view_info.components.b = VK_COMPONENT_SWIZZLE_B;
+            view_info.components.a = VK_COMPONENT_SWIZZLE_A;
+            view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            view_info.subresourceRange.baseMipLevel = 0;
+            view_info.subresourceRange.levelCount = 1;
+            view_info.subresourceRange.baseArrayLayer = 0;
+            view_info.subresourceRange.layerCount = 1;
+            view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            view_info.flags = 0;
+
+            sc_buf.image = m_vulkan_context->m_swapchain_images[i];
+            view_info.image = sc_buf.image;
+
+            res = vkCreateImageView(m_vulkan_context->m_device,
+                                    &view_info, nullptr, &sc_buf.view);
+            m_vulkan_context->m_swapchain_buffers.push_back(sc_buf);
+            assert(res == VK_SUCCESS);
+        }
 
     }
 

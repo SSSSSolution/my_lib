@@ -13,6 +13,18 @@
 namespace reality {
 namespace r_render_system {
 
+struct SwapChainBuffer {
+    VkImage image;
+    VkImageView view;
+};
+
+struct Depth {
+    VkFormat format = VK_FORMAT_UNDEFINED;
+    VkImage image;
+    VkDeviceMemory mem;
+    VkImageView view;
+};
+
 struct VulkanContext {
     std::shared_ptr<RWindow> m_window;
 
@@ -39,6 +51,10 @@ struct VulkanContext {
     VkQueue m_present_queue;
 
     VkSwapchainKHR m_swapchain;
+    std::vector<VkImage> m_swapchain_images;
+    std::vector<SwapChainBuffer> m_swapchain_buffers;
+
+    Depth m_depth;
 
 };
 

@@ -69,6 +69,8 @@ add_executable(r_render_system
     src/vulkan_renderer/command_buffer_initializer.cpp
     src/vulkan_renderer/vulkan_helper.h
     src/vulkan_renderer/vulkan_helper.cpp
+    src/vulkan_renderer/depth_buffer_initializer.h
+    src/vulkan_renderer/depth_buffer_initializer.cpp
 )
 
 target_include_directories(r_render_system PRIVATE src)

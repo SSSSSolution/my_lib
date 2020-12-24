@@ -27,5 +27,25 @@ namespace r_render_system
             vkGetDeviceQueue(vulkan_context->m_device, vulkan_context->m_present_queue_family_index, 0, &vulkan_context->m_present_queue);
         }
     }
+
+    bool VulkanHelper::memory_type_from_properties(std::shared_ptr<VulkanContext> vulkan_context,
+                                            uint32_t typeBits, VkFlags requirements_mask,
+                                            uint32_t *typeIndex)
+    {
+        for (uint32_t i = 0; i < vulkan_context->m_gpu_memory_properties.memoryTypeCount; i++)
+        {
+            if ((typeBits & 1) == 1) {
+                if ((vulkan_context->m_gpu_memory_properties.memoryTypes[i].propertyFlags &
+                     requirements_mask) == requirements_mask)
+                {
+                    *typeIndex = i;
+                    return true;
+                }
+            }
+            typeBits >>= 1;
+        }
+
+        return false;
+    }
 }
 }

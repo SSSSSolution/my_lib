@@ -12,6 +12,7 @@ namespace reality {
         SwapchainInitializer(std::shared_ptr<VulkanContext> vulkan_context);
 
         void init_swapchain();
+        void init_swapchain_image();
 
     private:
         std::shared_ptr<VulkanContext> m_vulkan_context;
