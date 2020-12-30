@@ -73,7 +73,7 @@ namespace r_render_system
         // 1 presenttable image as long as we present it before attempting
         // to acquire another
         uint32_t desire_number_of_swapchain_images = surf_capabilities.minImageCount;
-
+        printf("desire_number_of_swapchain_images = %d\n", desire_number_of_swapchain_images);
         VkSurfaceTransformFlagBitsKHR pre_transform;
         if (surf_capabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
         {
@@ -115,8 +115,7 @@ namespace r_render_system
         swapchain_info.oldSwapchain = VK_NULL_HANDLE;
         swapchain_info.clipped = false;
         swapchain_info.imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-        swapchain_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-                VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        swapchain_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         swapchain_info.queueFamilyIndexCount = 0;
         swapchain_info.pQueueFamilyIndices = nullptr;
@@ -148,6 +147,7 @@ namespace r_render_system
                                       &m_swapchain_image_count,
                                       nullptr);
         assert(res == VK_SUCCESS);
+        printf("m_swapchain image count: %d\n", m_swapchain_image_count);
 
         m_vulkan_context->m_swapchain_images.resize(m_swapchain_image_count);
         res = vkGetSwapchainImagesKHR(m_vulkan_context->m_device,

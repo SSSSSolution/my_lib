@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "window_info.h"
+#include <functional>
 
 namespace reality
 {
@@ -27,8 +28,11 @@ namespace r_render_system
 
       std::shared_ptr<WindowInfo> get_window_info();
 
+      void set_draw_func(std::function<void()>);
+
   private:
       RWindowImpl *m_impl;
+      std::function<void()> m_draw_func;
   };
 }
 }

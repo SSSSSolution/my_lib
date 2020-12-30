@@ -15,9 +15,11 @@ namespace r_render_system
       RRenderer(std::shared_ptr<RWindow> window);
       ~RRenderer();
     bool init();
+    void draw();
 
   private:
     std::unique_ptr<Impl> m_impl;
+
   };
 }
 }

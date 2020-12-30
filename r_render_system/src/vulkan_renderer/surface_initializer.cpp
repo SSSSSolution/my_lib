@@ -1,6 +1,6 @@
 #include "surface_initializer.h"
 
-#define PREFERRED_SURFACE_FORMAT VK_FORMAT_B8G8R8A8_UNORM
+#define PREFERRED_SURFACE_FORMAT VK_FORMAT_B8G8R8A8_SRGB
 
 namespace reality
 {
@@ -30,41 +30,41 @@ namespace r_render_system
     void SurfaceInitializer::choice_graphic_and_present_queue_family()
     {
         // Iterate over each queue to learn whether it supports presenting:
-        VkBool32 *pSupportsPresent = (VkBool32 *)malloc(m_vulkan_context->m_gpu_queue_family_count * sizeof(VkBool32));
-        for (uint32_t i = 0; i < m_vulkan_context->m_gpu_queue_family_count; ++i)
-        {
-            vkGetPhysicalDeviceSurfaceSupportKHR(m_vulkan_context->m_gpu_list[0], i, m_vulkan_context->m_surface,
-                    &pSupportsPresent[i]);
-        }
+//        VkBool32 *pSupportsPresent = (VkBool32 *)malloc(m_vulkan_context->m_gpu_queue_family_count * sizeof(VkBool32));
+//        for (uint32_t i = 0; i < m_vulkan_context->m_gpu_queue_family_count; ++i)
+//        {
+//            vkGetPhysicalDeviceSurfaceSupportKHR(m_vulkan_context->m_gpu_list[0], i, m_vulkan_context->m_surface,
+//                    &pSupportsPresent[i]);
+//        }
 
-        // Search for a graphics and a present queue in the array of queue
-        // families, try to find one that supports both
-        m_vulkan_context->m_graphics_queue_family_index = UINT32_MAX;
-        m_vulkan_context->m_present_queue_family_index = UINT32_MAX;
-        for (uint32_t i = 0; i < m_vulkan_context->m_gpu_queue_family_count; ++i)
-        {
-            if ((m_vulkan_context->m_gpu_queue_family_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
-            {
-                if (m_vulkan_context->m_graphics_queue_family_index == UINT32_MAX)
-                {
-                    m_vulkan_context->m_graphics_queue_family_index = i;
-                }
+//        // Search for a graphics and a present queue in the array of queue
+//        // families, try to find one that supports both
+//        m_vulkan_context->m_graphics_queue_family_index = UINT32_MAX;
+//        m_vulkan_context->m_present_queue_family_index = UINT32_MAX;
+//        for (uint32_t i = 0; i < m_vulkan_context->m_gpu_queue_family_count; ++i)
+//        {
+//            if ((m_vulkan_context->m_gpu_queue_family_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)
+//            {
+//                if (m_vulkan_context->m_graphics_queue_family_index == UINT32_MAX)
+//                {
+//                    m_vulkan_context->m_graphics_queue_family_index = i;
+//                }
 
-                if (pSupportsPresent[i] == VK_TRUE) {
-                    m_vulkan_context->m_graphics_queue_family_index = i;
-                    m_vulkan_context->m_present_queue_family_index = i;
-                    break;
-                }
-            }
-        }
+//                if (pSupportsPresent[i] == VK_TRUE) {
+//                    m_vulkan_context->m_graphics_queue_family_index = i;
+//                    m_vulkan_context->m_present_queue_family_index = i;
+//                    break;
+//                }
+//            }
+//        }
 
         // Generate error if could not find queues support graphics and present
-        if (m_vulkan_context->m_graphics_queue_family_index == UINT32_MAX ||
-            m_vulkan_context->m_present_queue_family_index == UINT32_MAX)
-        {
-            printf("Could not find a queue for both graphics and present\n");
-            exit(-1);
-        }
+//        if (m_vulkan_context->m_graphics_queue_family_index == UINT32_MAX ||
+//            m_vulkan_context->m_present_queue_family_index == UINT32_MAX)
+//        {
+//            printf("Could not find a queue for both graphics and present\n");
+//            exit(-1);
+//        }
     }
 
     void SurfaceInitializer::choice_format()
@@ -83,7 +83,8 @@ namespace r_render_system
         // Otherwise, use whatever the device's first reported surface format is.
         assert(format_count >= 1);
         m_vulkan_context->m_format = surface_formats[0].format;
-        for (size_t i = 0; i < format_count; ++i)
+        size_t i = 0;
+        for (; i < format_count; ++i)
         {
             if (surface_formats[i].format == PREFERRED_SURFACE_FORMAT)
             {
@@ -91,6 +92,7 @@ namespace r_render_system
                 break;
             }
         }
+        printf("format : %d, colorspace: %d\n", m_vulkan_context->m_format, surface_formats[i].colorSpace);
     }
 
 }

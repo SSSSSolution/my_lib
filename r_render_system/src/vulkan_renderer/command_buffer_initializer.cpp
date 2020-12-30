@@ -13,9 +13,10 @@ CommandBufferInitializer::CommandBufferInitializer(std::shared_ptr<VulkanContext
     cmd_alloc_info.pNext = nullptr;
     cmd_alloc_info.commandPool = m_vulkan_context->m_cmd_pool;
     cmd_alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    cmd_alloc_info.commandBufferCount = 1;
+    cmd_alloc_info.commandBufferCount = 2;
 
-    auto res = vkAllocateCommandBuffers(m_vulkan_context->m_device, &cmd_alloc_info, &m_vulkan_context->m_cmd_buf);
+    m_vulkan_context->m_cmd_bufs.resize(2);
+    auto res = vkAllocateCommandBuffers(m_vulkan_context->m_device, &cmd_alloc_info, m_vulkan_context->m_cmd_bufs.data());
     assert(res == VK_SUCCESS);
     printf("cmd buf created!\n");
 }

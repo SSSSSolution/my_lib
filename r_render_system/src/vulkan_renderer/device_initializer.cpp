@@ -9,10 +9,10 @@ std::vector<const char *> device_extensions = {
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 };
 
-DeviceInitializer::DeviceInitializer(std::shared_ptr<VulkanContext> vulkan_context)
+DeviceInitializer::DeviceInitializer(std::shared_ptr<VulkanContext> ctx)
 {
-    m_vulkan_context = vulkan_context;
-
+    printf("vk deavice init...\n");
+    m_ctx = ctx;
     init_device();
 }
 
@@ -27,7 +27,9 @@ void DeviceInitializer::init_device()
     queue_info.queueCount = 1;
     queue_info.pNext = nullptr;
     queue_info.pQueuePriorities = queue_priorities;
-    queue_info.queueFamilyIndex = m_vulkan_context->m_graphics_queue_family_index;
+    queue_info.queueFamilyIndex = m_ctx->m_graphics_queue_family_index;
+
+    VkPhysicalDeviceFeatures device_features {};
 
     VkDeviceCreateInfo device_info = {};
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -36,9 +38,9 @@ void DeviceInitializer::init_device()
     device_info.pQueueCreateInfos = &queue_info;
     device_info.enabledExtensionCount = device_extensions.size();
     device_info.ppEnabledExtensionNames = device_extensions.data();
-    device_info.pEnabledFeatures = nullptr;
+    device_info.pEnabledFeatures = &device_features;
 
-    auto res = vkCreateDevice(m_vulkan_context->m_gpu_list[0], &device_info, nullptr, &m_vulkan_context->m_device);
+    auto res = vkCreateDevice(m_ctx->m_gpu_list[0], &device_info, nullptr, &m_ctx->m_device);
     assert(res == VK_SUCCESS);
 
 }

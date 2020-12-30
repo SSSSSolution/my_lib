@@ -32,15 +32,15 @@ endmacro()
 
 
 message(STATUS "CMAKE_CURRENT_BINARY_DIR = " ${CMAKE_CURRENT_BINARY_DIR})
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/init_shader.vert)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/draw_cube.vert)
     message(STATUS "glsl_to_spirv(init_shader.vert)")
-    glsl_to_spirv(init_shader.vert)
-    set(sources ${sources} init_shader.vert.h )
+    glsl_to_spirv(draw_cube.vert)
+    set(sources ${sources} draw_cube.vert.h )
 endif()
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/init_shader.frag)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/draw_cube.frag)
     message(STATUS "glsl_to_spirv(init_shader.frag)")
-    glsl_to_spirv(init_shader.frag)
-    set(sources ${sources} init_shader.frag.h)
+    glsl_to_spirv(draw_cube.frag)
+    set(sources ${sources} draw_cube.frag.h)
 endif()
 
 message(STATUS "sources = " ${sources})
@@ -71,6 +71,24 @@ add_executable(r_render_system
     src/vulkan_renderer/vulkan_helper.cpp
     src/vulkan_renderer/depth_buffer_initializer.h
     src/vulkan_renderer/depth_buffer_initializer.cpp
+    src/vulkan_renderer/uniform_buffer_initializer.h
+    src/vulkan_renderer/uniform_buffer_initializer.cpp
+    src/vulkan_renderer/descriptor_and_pipeline_initializer.h
+    src/vulkan_renderer/descriptor_and_pipeline_initializer.cpp
+    src/vulkan_renderer/renderpass_initializer.h
+    src/vulkan_renderer/renderpass_initializer.cpp
+    src/vulkan_renderer/shader_initializer.h
+    src/vulkan_renderer/shader_initializer.cpp
+    src/vulkan_renderer/framebuffer_initializer.h
+    src/vulkan_renderer/framebuffer_initializer.cpp
+    src/vulkan_renderer/vertex_buffer_initializer.h
+    src/vulkan_renderer/vertex_buffer_initializer.cpp
+    src/vulkan_renderer/descriptor_pool_initializer.h
+    src/vulkan_renderer/descriptor_pool_initializer.cpp
+    src/vulkan_renderer/descriptor_set_initializer.h
+    src/vulkan_renderer/descriptor_set_initializer.cpp
+    src/vulkan_renderer/pipeline_initializer.h
+    src/vulkan_renderer/pipeline_initializer.cpp
 )
 
 target_include_directories(r_render_system PRIVATE src)
@@ -79,4 +97,5 @@ target_link_libraries(r_render_system
     r_log
     X11
     ${Vulkan_LIBRARIES}
+    pthread
 )

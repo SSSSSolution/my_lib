@@ -10,13 +10,13 @@ namespace reality
     {
     class DeviceInitializer {
     public:
-        DeviceInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+        DeviceInitializer(std::shared_ptr<VulkanContext> ctx);
         ~DeviceInitializer();
 
     private:
         void init_device();
 
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
     }
 }

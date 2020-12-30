@@ -12,11 +12,15 @@ namespace r_render_system
 class InstanceInitializer
 {
 public:
-    InstanceInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+    InstanceInitializer(std::shared_ptr<VulkanContext> ctx);
+    void init_instance();
+    void create_debug_messenger();
+    void check_extension_support();
     ~InstanceInitializer();
 
 private:
-    std::shared_ptr<VulkanContext> m_vulkan_context;
+    std::shared_ptr<VulkanContext> m_ctx;
+    VkDebugUtilsMessengerEXT m_debug_messenger;
 };
 
 }

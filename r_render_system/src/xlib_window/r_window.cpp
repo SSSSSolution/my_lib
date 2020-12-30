@@ -107,6 +107,11 @@ namespace r_render_system
             case ButtonPress:
               XCloseDisplay(m_impl->m_display);
         }
+        if (m_draw_func)
+        {
+            m_draw_func();
+        }
+
     }
   }
 
@@ -132,6 +137,11 @@ namespace r_render_system
       window_info->window  = m_impl->m_window;
       return window_info;
 
+  }
+
+  void RWindow::set_draw_func(std::function<void()> f)
+  {
+      m_draw_func = f;
   }
 }
 
