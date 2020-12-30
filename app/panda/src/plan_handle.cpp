@@ -1,8 +1,6 @@
 #include "plan_handle.h"
 #include "dir.h"
 #include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
@@ -13,13 +11,6 @@
 using namespace reality::common;
 namespace reality
 {
-    static std::string get_home_dir()
-    {
-        struct passwd *pw = getpwuid(getuid());
-        const char *home_dir = pw->pw_dir;
-        return std::string(home_dir);
-    }
-
     PlanHandle::PlanHandle()
     {
 
@@ -32,9 +23,7 @@ namespace reality
 
         before_edit_plan();
 
-        std::string cmd;
-        cmd.append(m_editor).append(" ").append(m_today_plan_file);
-        auto ret = system(cmd.c_str());
+        open_file_with_editor(m_today_plan_file, m_editor);
 
         finish_edit_plan();
     }

@@ -2,6 +2,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 namespace reality
 {
@@ -64,6 +67,20 @@ namespace reality
         std::string name = get_file_name_by_date(suffix, year, mon, day);
 
         return path.append(dir).append("/").append(name);
+    }
+
+    std::string get_home_dir()
+    {
+        struct passwd *pw = getpwuid(getuid());
+        const char *home_dir = pw->pw_dir;
+        return std::string(home_dir);
+    }
+
+    int open_file_with_editor(std::string file, std::string editor)
+    {
+        std::string cmd;
+        cmd.append(editor).append(" ").append(file);
+        return system(cmd.c_str());
     }
 }
 

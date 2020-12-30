@@ -1,0 +1,21 @@
+{
+    "dest_dir": ".",
+    "filename": {
+        "name": "foo",
+        "suffix": "h/cpp",
+    }
+    "constructor" : "c",
+    "destructor" : "d",
+    "virtual_desctructor": "vd",
+    "copy_constructor": "cc",
+    "move_constructor": "mv",
+    "move_assign": "ma",
+    "assign": "a",
+    "namespace_1": {
+        "name": "namespace1::namesapace2",
+        "class_1": {
+        "name": "foo1",
+        "default_func": "c/vd/cc/mv/ma/a"
+        }
+    }
+}

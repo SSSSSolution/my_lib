@@ -1,0 +1,14 @@
+{
+    "general": {
+        "editor": "vim"
+    },
+    "plan": {
+        "dir": "/home/bot/dev/my_work_space/my_note",
+        "editor": "vim"
+    },
+    "codegen": {
+        "cpp": {
+            "template_dir": "~/.panda/codegen/cpp/template"
+        }
+    }
+}

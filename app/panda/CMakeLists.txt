@@ -22,7 +22,9 @@ add_executable(panda
   src/main.cpp
   src/cmd/panda_cmd.cpp
   src/cmd/plan_cmd.cpp
+  src/cmd/code_gen_cmd.cpp
   src/plan_handle.cpp
+  src/cpp_code_gen_handle.cpp
   src/util.cpp
 )
 
