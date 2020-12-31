@@ -8,6 +8,10 @@ include_directories(PUBLIC include)
 add_library(r_common
     src/dir.cpp
     src/r_time.cpp
+    src/file.cpp
+    include/file.h
+    src/byte_buffer.cpp
+    include/byte_buffer.h
 )
 target_include_directories(r_common PUBLIC include)
 
@@ -28,6 +32,13 @@ add_executable(dir_test
 )
 target_link_libraries(dir_test ${GTEST_BOTH_LIBRARIES})
 target_link_libraries(dir_test ${CMAKE_THREAD_LIBS_INIT})
+
+add_executable(file_test
+    src/file.cpp
+    test/file_test/main.cpp
+)
+#target_link_libraries(file_test ${GTEST_BOTH_LIBRARIES})
+#target_link_libraries(file_test ${CMAKE_THREAD_LIBS_INIT})
 
 add_test(Test dir_test)
 enable_testing()

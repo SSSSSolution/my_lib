@@ -31,7 +31,7 @@ namespace reality
     void PlanHandle::parse_config()
     {
         std::string home_dir = get_home_dir();
-        std::string config_path = home_dir.append("/.panda_config");
+        std::string config_path = home_dir.append("/.config/panda/config.json");
 
         nlohmann::json config;
 

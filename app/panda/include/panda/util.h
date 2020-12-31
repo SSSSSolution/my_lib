@@ -2,6 +2,7 @@
 #define REALITY_APP_PANDA_UTIL_H
 
 #include <string>
+#include <vector>
 namespace reality {
 
 
@@ -12,6 +13,7 @@ namespace reality {
 
     std::string get_home_dir();
     int open_file_with_editor(std::string file, std::string editor);
+    std::vector<std::string> split_str(std::string str, std::string split);
 }
 
 #endif

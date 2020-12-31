@@ -82,6 +82,22 @@ namespace reality
         cmd.append(editor).append(" ").append(file);
         return system(cmd.c_str());
     }
+
+    std::vector<std::string> split_str(std::string str, std::string split)
+    {
+        std::vector<std::string> substrs;
+        while (str.find(split) != str.npos)
+        {
+            auto substr = str.substr(0, str.find(split));
+            str.erase(0, str.find(split) + split.size());
+            substrs.push_back(substr);
+        }
+        if (!str.empty())
+        {
+            substrs.push_back(str);
+        }
+        return substrs;
+    }
 }
 
 
