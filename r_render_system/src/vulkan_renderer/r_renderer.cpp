@@ -47,9 +47,11 @@ namespace r_render_system
       {
         printf("init...\n");
         instance_init = std::make_shared<InstanceInitializer>(m_ctx);
+        surface_init = std::make_shared<SurfaceInitializer>(m_ctx);
         physical_device_init = std::make_shared<PhysicalDeviceInitializer>(m_ctx);
-//        surface_init = std::make_shared<SurfaceInitializer>(m_ctx);
         device_init = std::make_shared<DeviceInitializer>(m_ctx);
+
+
 //        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
 //        cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
 //        VulkanHelper::execute_begin_command_buffer(m_ctx);

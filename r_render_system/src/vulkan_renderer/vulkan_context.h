@@ -49,26 +49,33 @@ struct VulkanContext {
     VkInstance m_instance;
     std::vector<VkExtensionProperties> m_support_instance_extensions;
 
+    /* surface */
+    VkSurfaceKHR m_surface;
+
     /* physical device */
     std::vector<VkPhysicalDevice> m_gpu_list;
     std::vector<VkPhysicalDeviceProperties> m_gpu_properties_list;
     std::vector<VkPhysicalDeviceMemoryProperties> m_gpu_memory_properties_list;
 
-    /* selected gpu */
+    /* physical device */
     std::vector<VkQueueFamilyProperties> m_gpu_queue_family_props;
     uint32_t m_graphics_queue_family_index;
     uint32_t m_present_queue_family_index;
 
-    VkSurfaceKHR m_surface;
+    /* device */
+    VkDevice m_device;
+    VkQueue m_graphics_queue;
+    VkQueue m_present_queue;
+
+
     VkFormat m_format;
 
-    VkDevice m_device;
+
 
     VkCommandPool m_cmd_pool;
     std::vector<VkCommandBuffer> m_cmd_bufs;
 
-    VkQueue m_graphics_queue;
-    VkQueue m_present_queue;
+
 
     VkSwapchainKHR m_swapchain;
     std::vector<VkImage> m_swapchain_images;

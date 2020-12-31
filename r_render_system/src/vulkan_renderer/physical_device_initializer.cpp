@@ -11,12 +11,7 @@ PhysicalDeviceInitializer::PhysicalDeviceInitializer(std::shared_ptr<VulkanConte
     m_ctx = ctx;
 
     enumerate_devices();
-    init_queue_family_index();
-    VulkanHelper::print_physical_devices(m_ctx);
-    for (int i = 0; i < m_ctx->m_gpu_queue_family_props.size(); i++)
-    {
-        VulkanHelper::print_queue_families(m_ctx->m_gpu_queue_family_props[i]);
-    }
+
 }
 
 PhysicalDeviceInitializer::~PhysicalDeviceInitializer() = default;
@@ -42,28 +37,7 @@ void PhysicalDeviceInitializer::enumerate_devices()
     }
 }
 
-void PhysicalDeviceInitializer::init_queue_family_index()
-{
-    uint32_t gpu_queue_family_count;
-    vkGetPhysicalDeviceQueueFamilyProperties(m_ctx->m_gpu_list[0],
-            &gpu_queue_family_count, nullptr);
-    assert(gpu_queue_family_count >= 1);
 
-    m_ctx->m_gpu_queue_family_props.resize(gpu_queue_family_count);
-    vkGetPhysicalDeviceQueueFamilyProperties(m_ctx->m_gpu_list[0],
-            &gpu_queue_family_count,
-            m_ctx->m_gpu_queue_family_props.data());
-
-    for (int i = 0; i < m_ctx->m_gpu_properties_list.size(); ++i)
-    {
-        if (m_ctx->m_gpu_queue_family_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-        {
-            m_ctx->m_graphics_queue_family_index = i;
-            break;
-        }
-    }
-    printf("select graphics queue family index is %d\n", m_ctx->m_graphics_queue_family_index);
-}
 }
 }
 

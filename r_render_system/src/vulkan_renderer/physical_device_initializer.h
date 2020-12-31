@@ -15,7 +15,6 @@ namespace reality
 
     private:
         void enumerate_devices();
-        void init_queue_family_index();
 
         std::shared_ptr<VulkanContext> m_ctx;
     };

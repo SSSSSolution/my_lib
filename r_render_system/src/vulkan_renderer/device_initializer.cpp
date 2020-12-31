@@ -1,5 +1,5 @@
 #include "device_initializer.h"
-
+#include "vulkan_helper.h"
 namespace reality
 {
 namespace r_render_system
@@ -13,6 +13,14 @@ DeviceInitializer::DeviceInitializer(std::shared_ptr<VulkanContext> ctx)
 {
     printf("vk deavice init...\n");
     m_ctx = ctx;
+    find_queue_family_index();
+
+    VulkanHelper::print_physical_devices(m_ctx);
+    for (int i = 0; i < m_ctx->m_gpu_queue_family_props.size(); i++)
+    {
+        VulkanHelper::print_queue_families(m_ctx->m_gpu_queue_family_props[i]);
+    }
+
     init_device();
 }
 
@@ -43,6 +51,40 @@ void DeviceInitializer::init_device()
     auto res = vkCreateDevice(m_ctx->m_gpu_list[0], &device_info, nullptr, &m_ctx->m_device);
     assert(res == VK_SUCCESS);
 
+    vkGetDeviceQueue(m_ctx->m_device, m_ctx->m_graphics_queue_family_index, 0, &m_ctx->m_graphics_queue);
+    vkGetDeviceQueue(m_ctx->m_device, m_ctx->m_present_queue_family_index, 0, &m_ctx->m_present_queue);
+}
+
+void DeviceInitializer::find_queue_family_index()
+{
+    uint32_t gpu_queue_family_count;
+    vkGetPhysicalDeviceQueueFamilyProperties(m_ctx->m_gpu_list[0],
+            &gpu_queue_family_count, nullptr);
+    assert(gpu_queue_family_count >= 1);
+
+    m_ctx->m_gpu_queue_family_props.resize(gpu_queue_family_count);
+    vkGetPhysicalDeviceQueueFamilyProperties(m_ctx->m_gpu_list[0],
+            &gpu_queue_family_count,
+            m_ctx->m_gpu_queue_family_props.data());
+
+    for (int i = 0; i < m_ctx->m_gpu_properties_list.size(); ++i)
+    {
+        if (m_ctx->m_gpu_queue_family_props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            m_ctx->m_graphics_queue_family_index = i;
+
+            VkBool32 present_support = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(m_ctx->m_gpu_list[0],
+                    i, m_ctx->m_surface, &present_support);
+            if (present_support == true)
+            {
+                m_ctx->m_present_queue_family_index = i;
+                break;
+            }
+        }
+    }
+    assert(m_ctx->m_graphics_queue_family_index == m_ctx->m_present_queue_family_index);
+    printf("select graphics queue family index is %d\n", m_ctx->m_graphics_queue_family_index);
 }
 
 }

@@ -14,6 +14,7 @@ namespace reality
         ~DeviceInitializer();
 
     private:
+        void find_queue_family_index();
         void init_device();
 
         std::shared_ptr<VulkanContext> m_ctx;

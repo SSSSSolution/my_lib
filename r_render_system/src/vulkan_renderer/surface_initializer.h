@@ -12,8 +12,6 @@ namespace reality {
         SurfaceInitializer(std::shared_ptr<VulkanContext> vulkan_context);
 
         void init_surface();
-        void choice_graphic_and_present_queue_family();
-        void choice_format();
 
     private:
         std::shared_ptr<VulkanContext> m_vulkan_context;
