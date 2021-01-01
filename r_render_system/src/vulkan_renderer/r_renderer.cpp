@@ -50,13 +50,13 @@ namespace r_render_system
         surface_init = std::make_shared<SurfaceInitializer>(m_ctx);
         physical_device_init = std::make_shared<PhysicalDeviceInitializer>(m_ctx);
         device_init = std::make_shared<DeviceInitializer>(m_ctx);
-
+        swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
 
 //        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
 //        cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
 //        VulkanHelper::execute_begin_command_buffer(m_ctx);
 //        VulkanHelper::init_device_queue(m_ctx);
-//        swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
+
 //        depth_buffer_init = std::make_shared<DepthBufferInitializer>(m_ctx);
 //        uniform_buffer_init = std::make_shared<UniformBufferInitializer>(m_ctx);
 //        descriptor_and_pipeline_init = std::make_shared<DescriptorAndPipelineInitializer>(m_ctx);

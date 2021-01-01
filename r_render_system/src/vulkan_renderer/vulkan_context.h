@@ -51,6 +51,9 @@ struct VulkanContext {
 
     /* surface */
     VkSurfaceKHR m_surface;
+    VkSurfaceCapabilitiesKHR m_surface_capabilities;
+    std::vector<VkSurfaceFormatKHR> m_surface_formats;
+    std::vector<VkPresentModeKHR> m_present_modes;
 
     /* physical device */
     std::vector<VkPhysicalDevice> m_gpu_list;
@@ -63,12 +66,19 @@ struct VulkanContext {
     uint32_t m_present_queue_family_index;
 
     /* device */
+    std::vector<VkExtensionProperties> m_support_device_extensions;
     VkDevice m_device;
     VkQueue m_graphics_queue;
     VkQueue m_present_queue;
 
-
-    VkFormat m_format;
+    /* swapchain */
+    VkSwapchainKHR m_swapchain;
+    std::vector<VkImage> m_swapchain_images;
+    std::vector<VkImageView> m_swapchain_views;
+    /* swapchain choose */
+    VkSurfaceFormatKHR m_swapchain_format;
+    VkPresentModeKHR m_swapchain_present_mode;
+    VkExtent2D m_swapchain_extent;
 
 
 
@@ -77,8 +87,7 @@ struct VulkanContext {
 
 
 
-    VkSwapchainKHR m_swapchain;
-    std::vector<VkImage> m_swapchain_images;
+    VkFormat m_format;
     std::vector<SwapChainBuffer> m_swapchain_buffers;
 
     Depth m_depth;

@@ -16,6 +16,7 @@ namespace reality
     private:
         void find_queue_family_index();
         void init_device();
+        void check_device_extension_support();
 
         std::shared_ptr<VulkanContext> m_ctx;
     };

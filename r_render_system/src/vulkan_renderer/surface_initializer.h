@@ -9,12 +9,12 @@ namespace reality {
     class SurfaceInitializer
     {
     public:
-        SurfaceInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+        SurfaceInitializer(std::shared_ptr<VulkanContext> ctx);
 
         void init_surface();
 
     private:
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
     }
 }

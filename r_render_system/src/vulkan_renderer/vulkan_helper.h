@@ -17,6 +17,8 @@ namespace  reality {
                                                 uint32_t *typeIndex);
         /* instance */
         static void print_support_instance_extension(std::shared_ptr<VulkanContext> ctx);
+        /* device */
+        static void print_support_device_extension(std::shared_ptr<VulkanContext> ctx);
 
         /* physical device */
         static void print_physical_devices(std::shared_ptr<VulkanContext> ctx);

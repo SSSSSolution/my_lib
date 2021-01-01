@@ -13,6 +13,8 @@ DeviceInitializer::DeviceInitializer(std::shared_ptr<VulkanContext> ctx)
 {
     printf("vk deavice init...\n");
     m_ctx = ctx;
+    check_device_extension_support();
+    VulkanHelper::print_support_device_extension(m_ctx);
     find_queue_family_index();
 
     VulkanHelper::print_physical_devices(m_ctx);
@@ -25,6 +27,14 @@ DeviceInitializer::DeviceInitializer(std::shared_ptr<VulkanContext> ctx)
 }
 
 DeviceInitializer::~DeviceInitializer() = default;
+
+void DeviceInitializer::check_device_extension_support()
+{
+    uint32_t extension_count;
+    vkEnumerateDeviceExtensionProperties(m_ctx->m_gpu_list[0], nullptr, &extension_count, nullptr);
+    m_ctx->m_support_device_extensions.resize(extension_count);
+    vkEnumerateDeviceExtensionProperties(m_ctx->m_gpu_list[0], nullptr, &extension_count, m_ctx->m_support_device_extensions.data());
+}
 
 void DeviceInitializer::init_device()
 {
@@ -86,6 +96,7 @@ void DeviceInitializer::find_queue_family_index()
     assert(m_ctx->m_graphics_queue_family_index == m_ctx->m_present_queue_family_index);
     printf("select graphics queue family index is %d\n", m_ctx->m_graphics_queue_family_index);
 }
+
 
 }
 }
