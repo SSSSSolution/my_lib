@@ -80,12 +80,23 @@ struct VulkanContext {
     VkPresentModeKHR m_swapchain_present_mode;
     VkExtent2D m_swapchain_extent;
 
+    /* render pass */
+    VkRenderPass m_renderpass;
+
+    /* pipeline */
+    VkShaderModule m_vertex_shader_module;
+    VkShaderModule m_frag_shader_module;
+    VkPipelineShaderStageCreateInfo m_shader_stages[2];
+    VkPipelineLayout m_pipeline_layout;
+    VkPipeline m_pipeline;
+
+    /* frame buffer */
+    std::vector<VkFramebuffer> m_framebuffers;
+
 
 
     VkCommandPool m_cmd_pool;
     std::vector<VkCommandBuffer> m_cmd_bufs;
-
-
 
     VkFormat m_format;
     std::vector<SwapChainBuffer> m_swapchain_buffers;
@@ -99,15 +110,9 @@ struct VulkanContext {
     glm::mat4x4 m_mvp;
 
     UniformData m_uniform_data;
-
-    VkPipelineLayout m_pipeline_layout;
     std::vector<VkDescriptorSetLayout> m_desc_layouts;
 
-    VkRenderPass m_renderpass;
 
-    VkPipelineShaderStageCreateInfo m_shader_stages[2];
-
-    std::vector<VkFramebuffer> m_framebuffers;
 
     VertexBuffer m_vertex_buf;
     VkVertexInputBindingDescription vi_binding;
@@ -119,7 +124,7 @@ struct VulkanContext {
     TextureData m_texture_data;
 
     VkPipelineCache m_pipeline_cache;
-    VkPipeline m_pipeline;
+
 
     uint32_t m_current_buffer;
     uint32_t m_queue_family_count;

@@ -10,10 +10,10 @@ namespace r_render_system
 class RenderPassInitializer
 {
 public:
-    RenderPassInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+    RenderPassInitializer(std::shared_ptr<VulkanContext> ctx);
     void init_renderpass();
 private:
-    std::shared_ptr<VulkanContext> m_vulkan_context;
+    std::shared_ptr<VulkanContext> m_ctx;
     bool m_include_depth;
 };
 

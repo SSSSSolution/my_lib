@@ -52,6 +52,16 @@ namespace r_render_system
         device_init = std::make_shared<DeviceInitializer>(m_ctx);
         swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
 
+        /* render */
+        renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
+
+        /* pipeline */
+        shader_init = std::make_shared<ShaderInitializer>(m_ctx);
+        pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
+
+        /* frame buffer */
+        framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
+
 //        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
 //        cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
 //        VulkanHelper::execute_begin_command_buffer(m_ctx);
@@ -60,13 +70,13 @@ namespace r_render_system
 //        depth_buffer_init = std::make_shared<DepthBufferInitializer>(m_ctx);
 //        uniform_buffer_init = std::make_shared<UniformBufferInitializer>(m_ctx);
 //        descriptor_and_pipeline_init = std::make_shared<DescriptorAndPipelineInitializer>(m_ctx);
-//        renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
-//        shader_init = std::make_shared<ShaderInitializer>(m_ctx);
-//        framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
+
+
+
 //        vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
 //        desc_pool_init = std::make_shared<DescriptorPoolInitializer>(m_ctx);
 //        desc_set_init = std::make_shared<DescriptorSetInitializer>(m_ctx);
-//        pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
+
 //        printf("start render...\n");
 //        VkClearValue clear_values[2];
 //        clear_values[0].color.float32[0] = 0.2f;

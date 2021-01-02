@@ -11,10 +11,10 @@ namespace reality
     class ShaderInitializer
     {
     public:
-        ShaderInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+        ShaderInitializer(std::shared_ptr<VulkanContext> ctx);
     private:
         void init_shader();
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
     }
 }

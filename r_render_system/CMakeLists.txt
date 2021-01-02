@@ -43,6 +43,17 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/draw_cube.frag)
     set(sources ${sources} draw_cube.frag.h)
 endif()
 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/triangle.vert)
+    message(STATUS "glsl_to_spirv(init_shader.vert)")
+    glsl_to_spirv(triangle.vert)
+    set(sources ${sources} triangle.vert.h )
+endif()
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/shader/triangle.frag)
+    message(STATUS "glsl_to_spirv(init_shader.frag)")
+    glsl_to_spirv(triangle.frag)
+    set(sources ${sources} triangle.frag.h)
+endif()
+
 message(STATUS "sources = " ${sources})
 add_executable(r_render_system
     ${sources}
