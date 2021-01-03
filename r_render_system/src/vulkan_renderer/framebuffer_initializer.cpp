@@ -35,5 +35,13 @@ namespace  r_render_system
         }
     }
 
+    FramebufferInitializer::~FramebufferInitializer()
+    {
+        for (int i = 0; i < m_ctx->m_framebuffers.size(); i++)
+        {
+            vkDestroyFramebuffer(m_ctx->m_device, m_ctx->m_framebuffers[i], nullptr);
+        }
+    }
+
 }
 }

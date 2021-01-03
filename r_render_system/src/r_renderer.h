@@ -16,6 +16,7 @@ namespace r_render_system
       ~RRenderer();
     bool init();
     void draw();
+    void on_window_resize();
 
   private:
     std::unique_ptr<Impl> m_impl;

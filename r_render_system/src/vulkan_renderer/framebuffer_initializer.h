@@ -12,6 +12,8 @@ namespace reality
     {
     public:
         FramebufferInitializer(std::shared_ptr<VulkanContext> ctx);
+        ~FramebufferInitializer();
+
         void init_framebuffers();
     private:
         std::shared_ptr<VulkanContext> m_ctx;

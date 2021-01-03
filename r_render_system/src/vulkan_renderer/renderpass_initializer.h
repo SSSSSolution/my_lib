@@ -11,6 +11,8 @@ class RenderPassInitializer
 {
 public:
     RenderPassInitializer(std::shared_ptr<VulkanContext> ctx);
+    ~RenderPassInitializer();
+
     void init_renderpass();
 private:
     std::shared_ptr<VulkanContext> m_ctx;

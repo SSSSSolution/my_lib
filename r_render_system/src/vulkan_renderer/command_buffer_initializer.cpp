@@ -13,7 +13,8 @@ CommandBufferInitializer::CommandBufferInitializer(std::shared_ptr<VulkanContext
 
 CommandBufferInitializer::~CommandBufferInitializer()
 {
-
+    vkFreeCommandBuffers(m_ctx->m_device, m_ctx->m_cmd_pool, m_ctx->m_cmd_bufs.size(),
+                         m_ctx->m_cmd_bufs.data());
 }
 
 void CommandBufferInitializer::init_command_buffer()

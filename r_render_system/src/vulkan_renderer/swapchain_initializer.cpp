@@ -23,6 +23,15 @@ namespace r_render_system
         create_image_view();
     }
 
+    SwapchainInitializer::~SwapchainInitializer()
+    {
+        for (int i = 0; i < m_ctx->m_swapchain_views.size(); i++)
+        {
+            vkDestroyImageView(m_ctx->m_device, m_ctx->m_swapchain_views[i], nullptr);
+        }
+        vkDestroySwapchainKHR(m_ctx->m_device, m_ctx->m_swapchain, nullptr);
+    }
+
     void SwapchainInitializer::get_surface_support()
     {
         /* surface capabilities */

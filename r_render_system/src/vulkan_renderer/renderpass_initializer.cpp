@@ -12,6 +12,11 @@ namespace r_render_system
         init_renderpass();
     }
 
+    RenderPassInitializer::~RenderPassInitializer()
+    {
+        vkDestroyRenderPass(m_ctx->m_device, m_ctx->m_renderpass, nullptr);
+    }
+
     void RenderPassInitializer::init_renderpass()
     {
         VkAttachmentDescription color_attachment;

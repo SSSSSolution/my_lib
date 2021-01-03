@@ -71,8 +71,17 @@ namespace r_render_system
                                   &m_ctx->m_in_flight_fences[i]);
               assert(res == VK_SUCCESS);
           }
+      }
 
-
+      void clean_semaphores()
+      {
+          for (size_t i = 0; i< MAX_FRAMES_IN_FLIGHT; i++)
+          {
+              vkDestroySemaphore(m_ctx->m_device, m_ctx->m_image_avaliable_semaphores[i], nullptr);
+              vkDestroySemaphore(m_ctx->m_device, m_ctx->m_render_finished_semaphores[i], nullptr);
+              vkDestroyFence(m_ctx->m_device, m_ctx->m_in_flight_fences[i], nullptr);
+          }
+          m_ctx->m_image_in_flight_fences.clear();
       }
 
       void init()
@@ -111,9 +120,15 @@ namespace r_render_system
           vkResetFences(m_ctx->m_device, 1, &m_ctx->m_in_flight_fences[current_frame]);
           // acquire an image from the swap chain
           uint32_t image_index;
-          vkAcquireNextImageKHR(m_ctx->m_device, m_ctx->m_swapchain, UINT64_MAX,
+          auto res = vkAcquireNextImageKHR(m_ctx->m_device, m_ctx->m_swapchain, UINT64_MAX,
                                 m_ctx->m_image_avaliable_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
-          printf("acquire image index: %d\n", image_index);
+          if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR)
+          {
+              on_window_resize();
+              return;
+          } else {
+              assert(res == VK_SUCCESS);
+          }
           if (m_ctx->m_image_in_flight_fences[image_index] != VK_NULL_HANDLE)
           {
               vkWaitForFences(m_ctx->m_device, 1, &m_ctx->m_image_in_flight_fences[image_index],
@@ -138,7 +153,7 @@ namespace r_render_system
           submit_info.pSignalSemaphores = signal_semaphores;
 
           vkResetFences(m_ctx->m_device, 1, &m_ctx->m_in_flight_fences[current_frame]);
-          auto res = vkQueueSubmit(m_ctx->m_graphics_queue, 1, &submit_info,
+          res = vkQueueSubmit(m_ctx->m_graphics_queue, 1, &submit_info,
                                    m_ctx->m_in_flight_fences[current_frame]);
           assert(res == VK_SUCCESS);
           printf("submit cmd\n");
@@ -155,10 +170,44 @@ namespace r_render_system
           present_info.pImageIndices = &image_index;
           present_info.pResults = nullptr;
 
-          vkQueuePresentKHR(m_ctx->m_present_queue, &present_info);
+          res = vkQueuePresentKHR(m_ctx->m_present_queue, &present_info);
+          if (res == VK_ERROR_OUT_OF_DATE_KHR || res == VK_SUBOPTIMAL_KHR)
+          {
+              on_window_resize();
+              return;
+          } else {
+              assert(res == VK_SUCCESS);
+          }
 
           vkQueueWaitIdle(m_ctx->m_present_queue);
           current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
+      }
+
+      void on_window_resize()
+      {
+          vkDeviceWaitIdle(m_ctx->m_device);
+          // clean
+          // clean framebuffer
+          framebuffer_init.reset();
+          // clean command buffer
+          cmd_buf_init.reset();
+          // clean pipeline & clean pipeline layout
+          pipeline_init.reset();
+          // clean render pass
+          renderpass_init.reset();
+          // clean image view & swapchain
+          swapchain_init.reset();
+
+          // recreate swapchain
+          swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
+          renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
+          pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
+          framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
+          cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
+
+          clean_semaphores();
+          create_semaphores();
+          current_frame = 0;
       }
 
   private:
@@ -199,6 +248,11 @@ namespace r_render_system
   void RRenderer::draw()
   {
       m_impl->draw();
+  }
+
+  void RRenderer::on_window_resize()
+  {
+      m_impl->on_window_resize();
   }
 }
 }

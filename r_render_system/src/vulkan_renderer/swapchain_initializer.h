@@ -10,6 +10,7 @@ namespace reality {
     {
     public:
         SwapchainInitializer(std::shared_ptr<VulkanContext> ctx);
+        ~SwapchainInitializer();
 
         void get_surface_support();
         void choose_swapchain_fromat();

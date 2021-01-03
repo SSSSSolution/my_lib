@@ -13,6 +13,8 @@ namespace reality
     {
     public:
         PipelineInitializer(std::shared_ptr<VulkanContext> ctx);
+        ~PipelineInitializer();
+
         void init_pipeline_cache();
         void init_pipeline();
 

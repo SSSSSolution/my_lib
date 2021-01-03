@@ -29,10 +29,12 @@ namespace r_render_system
       std::shared_ptr<WindowInfo> get_window_info();
 
       void set_draw_func(std::function<void()>);
+      void set_resize_callback(std::function<void()>);
 
   private:
       RWindowImpl *m_impl;
       std::function<void()> m_draw_func;
+      std::function<void()> m_resize_callback;
   };
 }
 }

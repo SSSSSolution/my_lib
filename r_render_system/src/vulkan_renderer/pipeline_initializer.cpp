@@ -14,6 +14,12 @@ namespace reality
         init_pipeline();
     }
 
+    PipelineInitializer::~PipelineInitializer()
+    {
+        vkDestroyPipeline(m_ctx->m_device, m_ctx->m_pipeline, nullptr);
+        vkDestroyPipelineLayout(m_ctx->m_device, m_ctx->m_pipeline_layout, nullptr);
+    }
+
     void PipelineInitializer::init_pipeline_cache()
     {
 

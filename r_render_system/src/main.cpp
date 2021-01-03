@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
     window->set_draw_func([&](){
         renderer->draw();
     });
+    window->set_resize_callback([&](){
+       renderer->on_window_resize();
+    });
     window->show();
 
     return 0;

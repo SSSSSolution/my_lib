@@ -101,6 +101,10 @@ namespace r_render_system
               {
                   m_impl->m_width = event.xconfigure.width;
                   m_impl->m_height = event.xconfigure.height;
+                  if (m_resize_callback)
+                  {
+                    m_resize_callback();
+                  }
               }
             break;
             case ButtonPress:
@@ -121,12 +125,14 @@ namespace r_render_system
 
   int RWindow::width()
   {
-      return m_impl->m_width;
+      int snum = DefaultScreen(m_impl->m_display);
+      return DisplayWidth(m_impl->m_display, snum);
   }
 
   int RWindow::height()
   {
-      return m_impl->m_height;
+      int snum = DefaultScreen(m_impl->m_display);
+      return DisplayHeight(m_impl->m_display, snum);
   }
 
   std::shared_ptr<WindowInfo> RWindow::get_window_info()
@@ -141,6 +147,11 @@ namespace r_render_system
   void RWindow::set_draw_func(std::function<void()> f)
   {
       m_draw_func = f;
+  }
+
+  void RWindow::set_resize_callback(std::function<void ()> f)
+  {
+      m_resize_callback = f;
   }
 }
 
