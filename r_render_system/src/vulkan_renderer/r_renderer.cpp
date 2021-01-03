@@ -33,7 +33,7 @@
 #include "vulkan_helper.h"
 #define NUM_DESCRIPTOR_SETS 1
 #define FENCE_TIMEOUT 100000000
-
+const int MAX_FRAMES_IN_FLIGHT = 2;
 namespace reality
 {
 namespace r_render_system
@@ -42,6 +42,38 @@ namespace r_render_system
   {
       uint32_t m_current_frame = 0;
       std::shared_ptr<VulkanContext> m_ctx {new VulkanContext()};
+      uint32_t current_frame = 0;
+
+      void create_semaphores()
+      {
+          m_ctx->m_image_avaliable_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+          m_ctx->m_render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+          m_ctx->m_in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
+          m_ctx->m_image_in_flight_fences.resize(m_ctx->m_swapchain_images.size(),
+                                                 VK_NULL_HANDLE);
+
+          VkSemaphoreCreateInfo semaphore_info = {};
+          semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+          VkFenceCreateInfo fence_info = {};
+          fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+          fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+          for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+          {
+              auto res = vkCreateSemaphore(m_ctx->m_device, &semaphore_info, nullptr,
+                                           &m_ctx->m_image_avaliable_semaphores[i]);
+              assert(res == VK_SUCCESS);
+              res = vkCreateSemaphore(m_ctx->m_device, &semaphore_info, nullptr,
+                                           &m_ctx->m_render_finished_semaphores[i]);
+              assert(res == VK_SUCCESS);
+              res = vkCreateFence(m_ctx->m_device, &fence_info, nullptr,
+                                  &m_ctx->m_in_flight_fences[i]);
+              assert(res == VK_SUCCESS);
+          }
+
+
+      }
 
       void init()
       {
@@ -62,35 +94,71 @@ namespace r_render_system
         /* frame buffer */
         framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
 
-//        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
-//        cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
-//        VulkanHelper::execute_begin_command_buffer(m_ctx);
-//        VulkanHelper::init_device_queue(m_ctx);
+        /* command pool */
+        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
 
-//        depth_buffer_init = std::make_shared<DepthBufferInitializer>(m_ctx);
-//        uniform_buffer_init = std::make_shared<UniformBufferInitializer>(m_ctx);
-//        descriptor_and_pipeline_init = std::make_shared<DescriptorAndPipelineInitializer>(m_ctx);
+        /* command buffer */
+        cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
 
-
-
-//        vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
-//        desc_pool_init = std::make_shared<DescriptorPoolInitializer>(m_ctx);
-//        desc_set_init = std::make_shared<DescriptorSetInitializer>(m_ctx);
-
-//        printf("start render...\n");
-//        VkClearValue clear_values[2];
-//        clear_values[0].color.float32[0] = 0.2f;
-//        clear_values[0].color.float32[1] = 0.2f;
-//        clear_values[0].color.float32[2] = 0.2f;
-//        clear_values[0].color.float32[3] = 0.2f;
-//        clear_values[1].depthStencil.depth = 1.0f;
-//        clear_values[1].depthStencil.stencil = 0;
-
-
+        /* semaphores */
+        create_semaphores();
       }
 
       void draw()
       {
+          vkWaitForFences(m_ctx->m_device, 1, &m_ctx->m_in_flight_fences[current_frame],
+                          VK_TRUE, UINT64_MAX);
+          vkResetFences(m_ctx->m_device, 1, &m_ctx->m_in_flight_fences[current_frame]);
+          // acquire an image from the swap chain
+          uint32_t image_index;
+          vkAcquireNextImageKHR(m_ctx->m_device, m_ctx->m_swapchain, UINT64_MAX,
+                                m_ctx->m_image_avaliable_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
+          printf("acquire image index: %d\n", image_index);
+          if (m_ctx->m_image_in_flight_fences[image_index] != VK_NULL_HANDLE)
+          {
+              vkWaitForFences(m_ctx->m_device, 1, &m_ctx->m_image_in_flight_fences[image_index],
+                              VK_TRUE, UINT64_MAX);
+          }
+          m_ctx->m_image_in_flight_fences[image_index] = m_ctx->m_image_in_flight_fences[current_frame];
+
+          // Execute the command buffer with that image as attachment in the framebuffer
+          VkSubmitInfo submit_info = {};
+          submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+          VkSemaphore wait_semaphores[] = {m_ctx->m_image_avaliable_semaphores[current_frame]};
+          VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+          submit_info.waitSemaphoreCount = 1;
+          submit_info.pWaitSemaphores = wait_semaphores;
+          submit_info.pWaitDstStageMask = wait_stages;
+          submit_info.commandBufferCount = 1;
+          submit_info.pCommandBuffers = &m_ctx->m_cmd_bufs[image_index];
+
+          VkSemaphore signal_semaphores[] = {m_ctx->m_render_finished_semaphores[current_frame]};
+          submit_info.signalSemaphoreCount = 1;
+          submit_info.pSignalSemaphores = signal_semaphores;
+
+          vkResetFences(m_ctx->m_device, 1, &m_ctx->m_in_flight_fences[current_frame]);
+          auto res = vkQueueSubmit(m_ctx->m_graphics_queue, 1, &submit_info,
+                                   m_ctx->m_in_flight_fences[current_frame]);
+          assert(res == VK_SUCCESS);
+          printf("submit cmd\n");
+
+          // return the image to the swap chain for presentaion
+          VkPresentInfoKHR present_info = {};
+          present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+          present_info.waitSemaphoreCount = 1;
+          present_info.pWaitSemaphores = signal_semaphores;
+
+          VkSwapchainKHR swapchains[] = {m_ctx->m_swapchain};
+          present_info.swapchainCount = 1;
+          present_info.pSwapchains = swapchains;
+          present_info.pImageIndices = &image_index;
+          present_info.pResults = nullptr;
+
+          vkQueuePresentKHR(m_ctx->m_present_queue, &present_info);
+
+          vkQueueWaitIdle(m_ctx->m_present_queue);
+          current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
       }
 
   private:

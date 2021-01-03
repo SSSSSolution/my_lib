@@ -93,10 +93,16 @@ struct VulkanContext {
     /* frame buffer */
     std::vector<VkFramebuffer> m_framebuffers;
 
-
-
+    /* command buffer */
     VkCommandPool m_cmd_pool;
     std::vector<VkCommandBuffer> m_cmd_bufs;
+
+    /* semaphore */
+    std::vector<VkSemaphore> m_image_avaliable_semaphores;
+    std::vector<VkSemaphore> m_render_finished_semaphores;
+    std::vector<VkFence> m_in_flight_fences;
+    std::vector<VkFence> m_image_in_flight_fences;
+
 
     VkFormat m_format;
     std::vector<SwapChainBuffer> m_swapchain_buffers;
@@ -132,10 +138,6 @@ struct VulkanContext {
     VkViewport m_viewport;
     VkRect2D m_scissor;
 
-    std::vector<VkSemaphore> m_image_available_semaphores;
-    std::vector<VkSemaphore> m_render_finished_semaphores;
-    std::vector<VkFence> m_draw_fences;
-    std::vector<VkFence> m_images_in_flight_fences;
 };
 
 }

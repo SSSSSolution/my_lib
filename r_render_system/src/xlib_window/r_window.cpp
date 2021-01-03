@@ -91,7 +91,6 @@ namespace r_render_system
   {
     XEvent event;
     XMapWindow(m_impl->m_display, m_impl->m_window);
-//    std::cout << "XMapWIndow" << std::endl;
     while(1) {
         XNextEvent(m_impl->m_display, &event);
         switch (event.type)

@@ -34,12 +34,22 @@ namespace r_render_system
         subpass_description.colorAttachmentCount = 1;
         subpass_description.pColorAttachments = &color_attachment_ref;
 
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
         VkRenderPassCreateInfo renderpass_info = {};
         renderpass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         renderpass_info.attachmentCount = 1;
         renderpass_info.pAttachments = &color_attachment;
         renderpass_info.subpassCount = 1;
         renderpass_info.pSubpasses = &subpass_description;
+        renderpass_info.dependencyCount = 1;
+        renderpass_info.pDependencies = &dependency;
 
         auto res = vkCreateRenderPass(m_ctx->m_device, &renderpass_info, nullptr, &m_ctx->m_renderpass);
         assert(res == VK_SUCCESS);

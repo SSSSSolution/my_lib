@@ -10,10 +10,12 @@ namespace reality
     class CommandBufferInitializer
     {
     public:
-        CommandBufferInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+        CommandBufferInitializer(std::shared_ptr<VulkanContext> ctx);
         ~CommandBufferInitializer();
+
+        void init_command_buffer();
     private:
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
     }
 }

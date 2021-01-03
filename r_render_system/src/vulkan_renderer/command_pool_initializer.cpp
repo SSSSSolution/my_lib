@@ -3,23 +3,28 @@
 namespace reality {
 
     namespace r_render_system {
-    CommandPoolInitializer::CommandPoolInitializer(std::shared_ptr<VulkanContext> vulkan_context)
+    CommandPoolInitializer::CommandPoolInitializer(std::shared_ptr<VulkanContext> ctx)
     {
-        m_vulkan_context = vulkan_context;
-
-        VkCommandPoolCreateInfo cmd_pool_info = {};
-        cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        cmd_pool_info.pNext = nullptr;
-        cmd_pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        cmd_pool_info.queueFamilyIndex = m_vulkan_context->m_graphics_queue_family_index;
-
-        auto res = vkCreateCommandPool(m_vulkan_context->m_device, &cmd_pool_info, nullptr, &vulkan_context->m_cmd_pool);
-        assert(res == VK_SUCCESS);
+        m_ctx = ctx;
+        printf("command pool init...\n");
+        init_command_pool();
     }
 
     CommandPoolInitializer::~CommandPoolInitializer()
     {
 
+    }
+
+    void CommandPoolInitializer::init_command_pool()
+    {
+        VkCommandPoolCreateInfo cmd_pool_info = {};
+        cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        cmd_pool_info.pNext = nullptr;
+        cmd_pool_info.flags = 0;
+        cmd_pool_info.queueFamilyIndex = m_ctx->m_graphics_queue_family_index;
+
+        auto res = vkCreateCommandPool(m_ctx->m_device, &cmd_pool_info, nullptr, &m_ctx->m_cmd_pool);
+        assert(res == VK_SUCCESS);
     }
     }
 }

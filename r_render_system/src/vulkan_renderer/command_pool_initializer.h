@@ -10,10 +10,13 @@ namespace reality {
     class CommandPoolInitializer
     {
     public:
-        CommandPoolInitializer(std::shared_ptr<VulkanContext> vulkan_context);
+        CommandPoolInitializer(std::shared_ptr<VulkanContext> ctx);
         ~CommandPoolInitializer();
+
+        void init_command_pool();
+
     private:
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
 
     }
