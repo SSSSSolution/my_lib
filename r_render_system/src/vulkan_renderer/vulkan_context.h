@@ -42,6 +42,16 @@ struct TextureData {
     VkDescriptorImageInfo image_info;
 };
 
+struct Vertex {
+    glm::vec2 pos;
+    glm::vec3 color;
+};
+const std::vector<Vertex> vertices = {
+    {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+    {{0.5, 0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
 struct VulkanContext {
     std::shared_ptr<RWindow> m_window;
 
@@ -93,6 +103,9 @@ struct VulkanContext {
     /* frame buffer */
     std::vector<VkFramebuffer> m_framebuffers;
 
+    /* vertex buffer */
+    VertexBuffer m_vertex_buf;
+
     /* command buffer */
     VkCommandPool m_cmd_pool;
     std::vector<VkCommandBuffer> m_cmd_bufs;
@@ -120,7 +133,7 @@ struct VulkanContext {
 
 
 
-    VertexBuffer m_vertex_buf;
+
     VkVertexInputBindingDescription vi_binding;
     VkVertexInputAttributeDescription vi_attribs[2];
 

@@ -23,6 +23,10 @@ namespace  reality {
         /* physical device */
         static void print_physical_devices(std::shared_ptr<VulkanContext> ctx);
         static void print_queue_families(VkQueueFamilyProperties props);
+
+        static void create_buffer(std::shared_ptr<VulkanContext> ctx, VkDeviceSize size,
+                                  VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                                  VkBuffer &buffer, VkDeviceMemory &buffer_memory);
     private:
     };
     }

@@ -27,13 +27,29 @@ namespace reality
 
     void PipelineInitializer::init_pipeline()
     {
+        VkVertexInputBindingDescription binding_description = {};
+        binding_description.binding = 0;
+        binding_description.stride = sizeof(Vertex);
+        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        std::vector<VkVertexInputAttributeDescription> attribute_description(2);
+        attribute_description[0].binding = 0;
+        attribute_description[0].location = 0;
+        attribute_description[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attribute_description[0].offset = offsetof(Vertex, pos);
+
+        attribute_description[1].binding = 0;
+        attribute_description[1].location = 1;
+        attribute_description[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attribute_description[1].offset = offsetof(Vertex, color);
+
         /* vertex input */
         VkPipelineVertexInputStateCreateInfo vi_info = {};
         vi_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vi_info.vertexBindingDescriptionCount = 0;
-        vi_info.pVertexBindingDescriptions = nullptr;
-        vi_info.vertexAttributeDescriptionCount = 0;
-        vi_info.pVertexAttributeDescriptions = nullptr;
+        vi_info.vertexBindingDescriptionCount = 1;
+        vi_info.pVertexBindingDescriptions = &binding_description;
+        vi_info.vertexAttributeDescriptionCount = 2;
+        vi_info.pVertexAttributeDescriptions = attribute_description.data();
 
         /* input assembly */
         VkPipelineInputAssemblyStateCreateInfo ia_info = {};

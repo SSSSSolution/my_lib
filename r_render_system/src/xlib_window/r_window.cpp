@@ -92,6 +92,10 @@ namespace r_render_system
     XEvent event;
     XMapWindow(m_impl->m_display, m_impl->m_window);
     while(1) {
+        if (!XPending(m_impl->m_display))
+        {
+
+        } else {
         XNextEvent(m_impl->m_display, &event);
         switch (event.type)
         {
@@ -110,12 +114,12 @@ namespace r_render_system
             case ButtonPress:
               XCloseDisplay(m_impl->m_display);
         }
+
+        }
         if (m_draw_func)
         {
             m_draw_func();
-        }
-
-    }
+        }    }
   }
 
   void RWindow::hide()

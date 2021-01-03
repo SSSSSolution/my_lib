@@ -32,18 +32,18 @@ namespace r_render_system
                                             uint32_t typeBits, VkFlags requirements_mask,
                                             uint32_t *typeIndex)
     {
-//        for (uint32_t i = 0; i < vulkan_context->m_gpu_memory_properties.memoryTypeCount; i++)
-//        {
-//            if ((typeBits & 1) == 1) {
-//                if ((vulkan_context->m_gpu_memory_properties.memoryTypes[i].propertyFlags &
-//                     requirements_mask) == requirements_mask)
-//                {
-//                    *typeIndex = i;
-//                    return true;
-//                }
-//            }
-//            typeBits >>= 1;
-//        }
+        for (uint32_t i = 0; i < vulkan_context->m_gpu_memory_properties_list[0].memoryTypeCount; i++)
+        {
+            if ((typeBits & 1) == 1) {
+                if ((vulkan_context->m_gpu_memory_properties_list[0].memoryTypes[i].propertyFlags &
+                     requirements_mask) == requirements_mask)
+                {
+                    *typeIndex = i;
+                    return true;
+                }
+            }
+            typeBits >>= 1;
+        }
 
         return false;
     }
@@ -113,6 +113,34 @@ namespace r_render_system
         {
             printf("    protected queue\n");
         }
+    }
+
+    void VulkanHelper::create_buffer(std::shared_ptr<VulkanContext> ctx, VkDeviceSize size,
+                                     VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                                     VkBuffer &buffer, VkDeviceMemory &buffer_memory)
+    {
+        VkBufferCreateInfo buffer_info = {};
+        buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        buffer_info.size = size;
+        buffer_info.usage = usage;
+        buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        auto res = vkCreateBuffer(ctx->m_device, &buffer_info, nullptr, &buffer);
+        assert(res == VK_SUCCESS);
+
+        VkMemoryRequirements mem_reqs;
+        vkGetBufferMemoryRequirements(ctx->m_device, buffer, &mem_reqs);
+
+        VkMemoryAllocateInfo alloc_info = {};
+        alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        alloc_info.allocationSize = mem_reqs.size;
+        auto pass = memory_type_from_properties(ctx, mem_reqs.memoryTypeBits,
+                                                properties, &alloc_info.memoryTypeIndex);
+
+        res = vkAllocateMemory(ctx->m_device, &alloc_info, nullptr, &buffer_memory);
+        assert(res == VK_SUCCESS);
+
+        vkBindBufferMemory(ctx->m_device, buffer, buffer_memory, 0);
     }
 }
 }

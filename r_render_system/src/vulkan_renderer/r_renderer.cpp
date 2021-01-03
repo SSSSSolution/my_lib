@@ -103,6 +103,9 @@ namespace r_render_system
         /* frame buffer */
         framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
 
+        /* vertex buffer */
+        vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
+
         /* command pool */
         cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
 
