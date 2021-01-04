@@ -27,6 +27,9 @@ namespace  reality {
         static void create_buffer(std::shared_ptr<VulkanContext> ctx, VkDeviceSize size,
                                   VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
                                   VkBuffer &buffer, VkDeviceMemory &buffer_memory);
+        static void copy_buffer(std::shared_ptr<VulkanContext> ctx,
+                                VkBuffer src_buf, VkBuffer dst_buf, VkDeviceSize size);
+
     private:
     };
     }

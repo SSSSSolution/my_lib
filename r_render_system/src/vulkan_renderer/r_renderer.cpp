@@ -103,11 +103,11 @@ namespace r_render_system
         /* frame buffer */
         framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
 
-        /* vertex buffer */
-        vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
-
         /* command pool */
         cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
+
+        /* vertex buffer */
+        vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
 
         /* command buffer */
         cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
@@ -159,7 +159,6 @@ namespace r_render_system
           res = vkQueueSubmit(m_ctx->m_graphics_queue, 1, &submit_info,
                                    m_ctx->m_in_flight_fences[current_frame]);
           assert(res == VK_SUCCESS);
-          printf("submit cmd\n");
 
           // return the image to the swap chain for presentaion
           VkPresentInfoKHR present_info = {};

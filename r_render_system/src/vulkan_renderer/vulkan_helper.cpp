@@ -142,6 +142,41 @@ namespace r_render_system
 
         vkBindBufferMemory(ctx->m_device, buffer, buffer_memory, 0);
     }
+
+    void VulkanHelper::copy_buffer(std::shared_ptr<VulkanContext> ctx,
+                                   VkBuffer src_buf, VkBuffer dst_buf, VkDeviceSize size)
+    {
+        VkCommandBufferAllocateInfo alloc_info = {};
+        alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        alloc_info.commandPool = ctx->m_cmd_pool;
+        alloc_info.commandBufferCount = 1;
+
+        VkCommandBuffer cmd_buf;
+        auto res = vkAllocateCommandBuffers(ctx->m_device, &alloc_info, &cmd_buf);
+        assert(res == VK_SUCCESS);
+
+        VkCommandBufferBeginInfo begin_info = {};
+        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(cmd_buf, &begin_info);
+
+        VkBufferCopy copy_region = {};
+        copy_region.srcOffset = 0;
+        copy_region.dstOffset = 0;
+        copy_region.size = size;
+        vkCmdCopyBuffer(cmd_buf, src_buf, dst_buf, 1, &copy_region);
+
+        vkEndCommandBuffer(cmd_buf);
+
+        VkSubmitInfo submit_info = {};
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &cmd_buf;
+
+        vkQueueSubmit(ctx->m_graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+        vkQueueWaitIdle(ctx->m_graphics_queue);
+    }
 }
 }
 

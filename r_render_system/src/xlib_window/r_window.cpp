@@ -103,11 +103,15 @@ namespace r_render_system
               if (m_impl->m_width != event.xconfigure.width ||
                   m_impl->m_height != event.xconfigure.height)
               {
+                  if (m_impl->m_width == event.xconfigure.width &&
+                      m_impl->m_height == event.xconfigure.height)
+                    break;
                   m_impl->m_width = event.xconfigure.width;
                   m_impl->m_height = event.xconfigure.height;
                   if (m_resize_callback)
                   {
                     m_resize_callback();
+                    printf("resize\n");
                   }
               }
             break;
@@ -119,7 +123,8 @@ namespace r_render_system
         if (m_draw_func)
         {
             m_draw_func();
-        }    }
+        }
+    }
   }
 
   void RWindow::hide()
