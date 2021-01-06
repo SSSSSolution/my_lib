@@ -11,6 +11,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <chrono>
 
 #include "vulkan_context.h"
 #include "instance_initializer.h"
@@ -30,6 +31,7 @@
 #include "descriptor_pool_initializer.h"
 #include "descriptor_set_initializer.h"
 #include "pipeline_initializer.h"
+#include "descriptor_set_layout_initializer.h"
 #include "vulkan_helper.h"
 #define NUM_DESCRIPTOR_SETS 1
 #define FENCE_TIMEOUT 100000000
@@ -96,6 +98,9 @@ namespace r_render_system
         /* render */
         renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
 
+        /* descriptor set layout */
+        descriptor_set_layout_init = std::make_shared<DescriptorSetLayoutInitializer>(m_ctx);
+
         /* pipeline */
         shader_init = std::make_shared<ShaderInitializer>(m_ctx);
         pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
@@ -108,6 +113,12 @@ namespace r_render_system
 
         /* vertex buffer */
         vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
+
+        /* descriptor pool */
+        desc_pool_init = std::make_shared<DescriptorPoolInitializer>(m_ctx);
+
+        /* descriptor sets */
+        desc_set_init = std::make_shared<DescriptorSetInitializer>(m_ctx);
 
         /* command buffer */
         cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
@@ -132,6 +143,9 @@ namespace r_render_system
           } else {
               assert(res == VK_SUCCESS);
           }
+
+          update_uniform_buffer(image_index);
+
           if (m_ctx->m_image_in_flight_fences[image_index] != VK_NULL_HANDLE)
           {
               vkWaitForFences(m_ctx->m_device, 1, &m_ctx->m_image_in_flight_fences[image_index],
@@ -185,6 +199,45 @@ namespace r_render_system
           current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
       }
 
+      void update_uniform_buffer(uint32_t current_image)
+      {
+           static auto start_time = std::chrono::high_resolution_clock::now();
+           auto current_time = std::chrono::high_resolution_clock::now();
+           float time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+           printf("time: %f\n", time);
+           UniformBufferObject ubo{};
+           ubo.model = glm::rotate(glm::mat4(1.0f),
+                                   time * glm::radians(90.0f),
+                                   glm::vec3(0.0f, 0.0f, 1.0f));
+//           ubo.model = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                               glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                               glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                               glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+           ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
+                                  glm::vec3(0.0f, 0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f));
+//           ubo.view = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+           ubo.proj = glm::perspective(45.0f,
+                                       ((float)m_ctx->m_swapchain_extent.width)/
+                                       (float)m_ctx->m_swapchain_extent.height,
+                                       0.1f, 10.0f);
+           ubo.proj[1][1] *= -1;
+//           ubo.proj = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+           printf("%f\n", ((float)m_ctx->m_swapchain_extent.width)/
+                  (float)m_ctx->m_swapchain_extent.height);
+           void *data;
+           vkMapMemory(m_ctx->m_device, m_ctx->m_uniform_buffer_mems[current_image], 0, sizeof(ubo), 0, &data);
+            memcpy(data, &ubo, sizeof(ubo));
+           vkUnmapMemory(m_ctx->m_device, m_ctx->m_uniform_buffer_mems[current_image]);
+      }
+
       void on_window_resize()
       {
           vkDeviceWaitIdle(m_ctx->m_device);
@@ -230,6 +283,7 @@ namespace r_render_system
       std::shared_ptr<DescriptorPoolInitializer> desc_pool_init;
       std::shared_ptr<DescriptorSetInitializer> desc_set_init;
       std::shared_ptr<PipelineInitializer> pipeline_init;
+      std::shared_ptr<DescriptorSetLayoutInitializer> descriptor_set_layout_init;
   };
 
   RRenderer::RRenderer(std::shared_ptr<RWindow> window)

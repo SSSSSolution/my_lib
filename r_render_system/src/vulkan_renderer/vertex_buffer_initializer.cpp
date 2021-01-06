@@ -12,6 +12,8 @@ namespace r_render_system
         m_ctx = ctx;
         printf("vertex buffer init...\n");
         init_vertex_buffer();
+        init_index_buffer();
+        init_uniform_buffer();
     }
 
     void VertexBufferInitializer::init_vertex_buffer()
@@ -53,6 +55,49 @@ namespace r_render_system
         VulkanHelper::copy_buffer(m_ctx, staging_buffer,
                                   m_ctx->m_vertex_buf.buf, buffer_size);
 
+    }
+
+    void VertexBufferInitializer::init_index_buffer()
+    {
+        VkDeviceSize buf_size = sizeof(indices[0]) * indices.size();
+
+        VkBuffer staging_buf;
+        VkDeviceMemory staging_buf_mem;
+        VulkanHelper::create_buffer(m_ctx, buf_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                    staging_buf, staging_buf_mem);
+
+        void *data;
+        vkMapMemory(m_ctx->m_device, staging_buf_mem, 0, buf_size, 0, &data);
+        memcpy(data, indices.data(), (size_t)buf_size);
+        vkUnmapMemory(m_ctx->m_device, staging_buf_mem);
+
+        VulkanHelper::create_buffer(m_ctx, buf_size,
+                                    VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                    VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                    m_ctx->m_index_buf.buf, m_ctx->m_index_buf.mem);
+        VulkanHelper::copy_buffer(m_ctx, staging_buf,
+                                  m_ctx->m_index_buf.buf, (size_t)buf_size);
+    }
+
+    void VertexBufferInitializer::init_uniform_buffer()
+    {
+        VkDeviceSize buf_size = sizeof(UniformBufferObject);
+
+        m_ctx->m_uniform_bufs.resize(m_ctx->m_swapchain_images.size());
+        m_ctx->m_uniform_buffer_mems.resize(m_ctx->m_swapchain_images.size());
+
+        for (size_t i = 0; i < m_ctx->m_swapchain_images.size(); i++)
+        {
+            VulkanHelper::create_buffer(m_ctx, buf_size,
+                                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                        m_ctx->m_uniform_bufs[i],
+                                        m_ctx->m_uniform_buffer_mems[i]);
+        }
     }
 }
 }

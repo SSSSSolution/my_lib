@@ -55,6 +55,7 @@ namespace reality
         VkPipelineInputAssemblyStateCreateInfo ia_info = {};
         ia_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         ia_info.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+//        ia_info.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
         ia_info.primitiveRestartEnable = VK_FALSE;
 
         /* view port */
@@ -84,8 +85,10 @@ namespace reality
         r_info.rasterizerDiscardEnable = VK_FALSE;
         r_info.polygonMode = VK_POLYGON_MODE_FILL;
         r_info.lineWidth = 1.0f;
-        r_info.cullMode = VK_CULL_MODE_BACK_BIT;
-        r_info.frontFace = VK_FRONT_FACE_CLOCKWISE;
+//        r_info.cullMode = VK_CULL_MODE_BACK_BIT;
+        r_info.cullMode = VK_CULL_MODE_NONE;
+        r_info.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+//        r_info.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         r_info.depthBiasEnable = VK_FALSE;
         r_info.depthBiasConstantFactor = 0.0f;
         r_info.depthBiasClamp = 0.0f;
@@ -128,8 +131,8 @@ namespace reality
         /* pipeline layout */
         VkPipelineLayoutCreateInfo pipeline_layout_info = {};
         pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipeline_layout_info.setLayoutCount = 0;
-        pipeline_layout_info.pSetLayouts = nullptr;
+        pipeline_layout_info.setLayoutCount = 1;
+        pipeline_layout_info.pSetLayouts = &m_ctx->m_descriptor_set_layout;
         pipeline_layout_info.pushConstantRangeCount = 0;
         pipeline_layout_info.pPushConstantRanges = nullptr;
 

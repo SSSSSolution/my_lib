@@ -80,12 +80,12 @@ add_executable(r_render_system
     src/vulkan_renderer/command_buffer_initializer.cpp
     src/vulkan_renderer/vulkan_helper.h
     src/vulkan_renderer/vulkan_helper.cpp
-    src/vulkan_renderer/depth_buffer_initializer.h
-    src/vulkan_renderer/depth_buffer_initializer.cpp
-    src/vulkan_renderer/uniform_buffer_initializer.h
-    src/vulkan_renderer/uniform_buffer_initializer.cpp
-    src/vulkan_renderer/descriptor_and_pipeline_initializer.h
-    src/vulkan_renderer/descriptor_and_pipeline_initializer.cpp
+#    src/vulkan_renderer/depth_buffer_initializer.h
+#    src/vulkan_renderer/depth_buffer_initializer.cpp
+#    src/vulkan_renderer/uniform_buffer_initializer.h
+#    src/vulkan_renderer/uniform_buffer_initializer.cpp
+#    src/vulkan_renderer/descriptor_and_pipeline_initializer.h
+#    src/vulkan_renderer/descriptor_and_pipeline_initializer.cpp
     src/vulkan_renderer/renderpass_initializer.h
     src/vulkan_renderer/renderpass_initializer.cpp
     src/vulkan_renderer/shader_initializer.h
@@ -100,6 +100,9 @@ add_executable(r_render_system
     src/vulkan_renderer/descriptor_set_initializer.cpp
     src/vulkan_renderer/pipeline_initializer.h
     src/vulkan_renderer/pipeline_initializer.cpp
+    src/vulkan_renderer/descriptor_set_layout_initializer.h
+    src/vulkan_renderer/descriptor_set_layout_initializer.cpp
+
 )
 
 target_include_directories(r_render_system PRIVATE src)

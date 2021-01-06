@@ -54,7 +54,12 @@ void CommandBufferInitializer::init_command_buffer()
         VkBuffer vertex_buffers[] = {m_ctx->m_vertex_buf.buf};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(m_ctx->m_cmd_bufs[i], 0, 1, vertex_buffers, offsets);
-        vkCmdDraw(m_ctx->m_cmd_bufs[i], vertices.size(), 1, 0, 0);
+        vkCmdBindIndexBuffer(m_ctx->m_cmd_bufs[i], m_ctx->m_index_buf.buf, 0, VK_INDEX_TYPE_UINT16);
+//        vkCmdDraw(m_ctx->m_cmd_bufs[i], vertices.size(), 1, 0, 0);
+        vkCmdBindDescriptorSets(m_ctx->m_cmd_bufs[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                m_ctx->m_pipeline_layout, 0, 1,
+                                &m_ctx->m_descriptor_sets[i], 0, nullptr);
+        vkCmdDrawIndexed(m_ctx->m_cmd_bufs[i], indices.size(), 1, 0, 0, 0);
         vkCmdEndRenderPass(m_ctx->m_cmd_bufs[i]);
 
         res = vkEndCommandBuffer(m_ctx->m_cmd_bufs[i]);

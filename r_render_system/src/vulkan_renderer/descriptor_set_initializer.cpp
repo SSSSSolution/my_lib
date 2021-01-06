@@ -14,39 +14,41 @@ namespace r_render_system
 
     void DescriptorSetInitializer::init_descriptor_set()
     {
+        std::vector<VkDescriptorSetLayout> layouts(m_ctx->m_swapchain_images.size(), m_ctx->m_descriptor_set_layout);
+
         VkDescriptorSetAllocateInfo alloc_info[1];
         alloc_info[0].sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         alloc_info[0].pNext = nullptr;
         alloc_info[0].descriptorPool = m_ctx->m_desc_pool;
-        alloc_info[0].descriptorSetCount = 1;
-        alloc_info[0].pSetLayouts = m_ctx->m_desc_layouts.data();
+        alloc_info[0].descriptorSetCount = m_ctx->m_swapchain_images.size();
+        alloc_info[0].pSetLayouts = layouts.data();
 
-        m_ctx->m_desc_sets.resize(1);
-        auto res = vkAllocateDescriptorSets(m_ctx->m_device, alloc_info, m_ctx->m_desc_sets.data());
+        m_ctx->m_descriptor_sets.resize(m_ctx->m_swapchain_images.size());
+        auto res = vkAllocateDescriptorSets(m_ctx->m_device, alloc_info, m_ctx->m_descriptor_sets.data());
         assert(res == VK_SUCCESS);
-        VkWriteDescriptorSet writes[2];
 
-        writes[0] = {};
-        writes[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writes[0].dstSet = m_ctx->m_desc_sets[0];
-        writes[0].descriptorCount = 1;
-        writes[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        writes[0].pBufferInfo = &m_ctx->m_uniform_data.buffer_info;
-        writes[0].dstArrayElement = 0;
-        writes[0].dstBinding = 0;
-
-        if (m_use_texture)
+        for (size_t i = 0; i < m_ctx->m_swapchain_images.size(); i++)
         {
-            writes[1] = {};
-            writes[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            writes[1].dstSet = m_ctx->m_desc_sets[0];
-            writes[1].dstBinding = 1;
-            writes[1].descriptorCount = 1;
-            writes[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            writes[1].pImageInfo = &m_ctx->m_texture_data.image_info;
-            writes[1].dstArrayElement = 0;
+            VkDescriptorBufferInfo buffer_info = {};
+            buffer_info.buffer = m_ctx->m_uniform_bufs[i];
+            buffer_info.offset = 0;
+            buffer_info.range = sizeof(UniformBufferObject);
+
+            VkWriteDescriptorSet descriptor_write = {};
+            descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptor_write.dstSet = m_ctx->m_descriptor_sets[i];
+            descriptor_write.dstBinding = 0;
+            descriptor_write.dstArrayElement = 0;
+
+            descriptor_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptor_write.descriptorCount = 1;
+
+            descriptor_write.pBufferInfo = &buffer_info;
+            descriptor_write.pImageInfo = nullptr;
+            descriptor_write.pTexelBufferView = nullptr;
+
+            vkUpdateDescriptorSets(m_ctx->m_device, 1, &descriptor_write, 0, nullptr);
         }
-        vkUpdateDescriptorSets(m_ctx->m_device, m_use_texture ? 2 : 1, writes, 0, nullptr);
     }
 }
 }
