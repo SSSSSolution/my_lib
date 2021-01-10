@@ -12,6 +12,7 @@ namespace reality
         {
         public:
             VertexBufferInitializer(std::shared_ptr<VulkanContext> ctx);
+            void load_model();
             void init_vertex_buffer();
             void init_index_buffer();
             void init_uniform_buffer();

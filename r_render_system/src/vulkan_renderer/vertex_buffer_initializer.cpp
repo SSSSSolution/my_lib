@@ -2,6 +2,9 @@
 #include "cube_data.h"
 #include "vulkan_helper.h"
 #include <string.h>
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+#include <unordered_map>
 
 namespace reality
 {
@@ -11,26 +14,57 @@ namespace r_render_system
     {
         m_ctx = ctx;
         printf("vertex buffer init...\n");
+        load_model();
         init_vertex_buffer();
         init_index_buffer();
         init_uniform_buffer();
     }
 
+    void VertexBufferInitializer::load_model()
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        auto res = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err,
+                                    "/home/reality/data/modules/viking_room/viking_room.obj");
+        assert(res == true);
+
+        std::unordered_map<Vertex, uint32_t> unique_vertexs;
+        for (const auto & shape : shapes)
+        {
+            for (const auto & index : shape.mesh.indices)
+            {
+                Vertex vertex{};
+
+                vertex.pos = {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2]
+                };
+                vertex.texCoord = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    attrib.texcoords[2 * index.texcoord_index + 1]
+                };
+                vertex.color = {1.0f, 1.0f, 1.0f};
+
+                if (unique_vertexs.count(vertex) == 0)
+                {
+                    unique_vertexs[vertex] = vertices.size();
+                    vertices.push_back(vertex);
+                }
+                indices.push_back(unique_vertexs[vertex]);
+            }
+        }
+        printf("vertices size: %d\n", vertices.size());
+        printf("index size: %d\n", indices.size());
+
+    }
+
     void VertexBufferInitializer::init_vertex_buffer()
     {
         VkDeviceSize buffer_size = sizeof(vertices[0]) * vertices.size();
-//        VulkanHelper::create_buffer(m_ctx, buffer_size,
-//                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-//                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-//                VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-//                m_ctx->m_vertex_buf.buf, m_ctx->m_vertex_buf.mem);
-
-//        uint8_t *data;
-//        auto res = vkMapMemory(m_ctx->m_device, m_ctx->m_vertex_buf.mem, 0,
-//                          buffer_size, 0, (void **)&data);
-//            memcpy(data, vertices.data(), (size_t)buffer_size);
-//        vkUnmapMemory(m_ctx->m_device, m_ctx->m_vertex_buf.mem);
-//        assert(res == VK_SUCCESS);
 
         VkBuffer staging_buffer;
         VkDeviceMemory staging_buffer_memory;

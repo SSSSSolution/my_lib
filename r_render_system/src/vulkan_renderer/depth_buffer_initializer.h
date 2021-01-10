@@ -10,11 +10,12 @@ namespace r_render_system
     class DepthBufferInitializer
     {
     public:
-        DepthBufferInitializer(std::shared_ptr<VulkanContext>);
+        DepthBufferInitializer(std::shared_ptr<VulkanContext> ctx);
+        ~DepthBufferInitializer();
 
     private:
         void init_depth_buffer();
-        std::shared_ptr<VulkanContext> m_vulkan_context;
+        std::shared_ptr<VulkanContext> m_ctx;
     };
 }
 }

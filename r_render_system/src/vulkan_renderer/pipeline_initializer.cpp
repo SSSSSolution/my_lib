@@ -27,28 +27,29 @@ namespace reality
 
     void PipelineInitializer::init_pipeline()
     {
-        VkVertexInputBindingDescription binding_description = {};
-        binding_description.binding = 0;
-        binding_description.stride = sizeof(Vertex);
-        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+        VkVertexInputBindingDescription binding_description = Vertex::get_binding_description();
+//        binding_description.binding = 0;
+//        binding_description.stride = sizeof(Vertex);
+//        binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-        std::vector<VkVertexInputAttributeDescription> attribute_description(2);
-        attribute_description[0].binding = 0;
-        attribute_description[0].location = 0;
-        attribute_description[0].format = VK_FORMAT_R32G32_SFLOAT;
-        attribute_description[0].offset = offsetof(Vertex, pos);
+        std::vector<VkVertexInputAttributeDescription> attribute_description =
+                Vertex::get_attribute_descriptions();
+//        attribute_description[0].binding = 0;
+//        attribute_description[0].location = 0;
+//        attribute_description[0].format = VK_FORMAT_R32G32_SFLOAT;
+//        attribute_description[0].offset = offsetof(Vertex, pos);
 
-        attribute_description[1].binding = 0;
-        attribute_description[1].location = 1;
-        attribute_description[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-        attribute_description[1].offset = offsetof(Vertex, color);
+//        attribute_description[1].binding = 0;
+//        attribute_description[1].location = 1;
+//        attribute_description[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+//        attribute_description[1].offset = offsetof(Vertex, color);
 
         /* vertex input */
         VkPipelineVertexInputStateCreateInfo vi_info = {};
         vi_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vi_info.vertexBindingDescriptionCount = 1;
         vi_info.pVertexBindingDescriptions = &binding_description;
-        vi_info.vertexAttributeDescriptionCount = 2;
+        vi_info.vertexAttributeDescriptionCount = attribute_description.size();
         vi_info.pVertexAttributeDescriptions = attribute_description.data();
 
         /* input assembly */
@@ -97,9 +98,9 @@ namespace reality
         /* Multisampling */
         VkPipelineMultisampleStateCreateInfo ms_info = {};
         ms_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        ms_info.sampleShadingEnable = VK_FALSE;
-        ms_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        ms_info.minSampleShading = 1.0f;
+        ms_info.sampleShadingEnable = VK_TRUE;
+        ms_info.rasterizationSamples = m_ctx->m_msaa_samples;
+        ms_info.minSampleShading = 0.2f;
         ms_info.pSampleMask = nullptr;
         ms_info.alphaToCoverageEnable = VK_FALSE;
         ms_info.alphaToOneEnable = VK_FALSE;
@@ -128,6 +129,19 @@ namespace reality
         color_blend_info.blendConstants[2] = 0.0f;
         color_blend_info.blendConstants[3] = 0.0f;
 
+        /* depth stencil */
+        VkPipelineDepthStencilStateCreateInfo depth_stencil_info = {};
+        depth_stencil_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depth_stencil_info.depthTestEnable = VK_TRUE;
+        depth_stencil_info.depthWriteEnable = VK_TRUE;
+        depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
+        depth_stencil_info.depthBoundsTestEnable = VK_FALSE;
+        depth_stencil_info.minDepthBounds = 0.0f;
+        depth_stencil_info.maxDepthBounds = 1.0f;
+        depth_stencil_info.stencilTestEnable = VK_FALSE;
+        depth_stencil_info.front = {};
+        depth_stencil_info.back = {};
+
         /* pipeline layout */
         VkPipelineLayoutCreateInfo pipeline_layout_info = {};
         pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -150,7 +164,7 @@ namespace reality
         pipeline_info.pViewportState = &vp_info;
         pipeline_info.pRasterizationState = &r_info;
         pipeline_info.pMultisampleState = &ms_info;
-        pipeline_info.pDepthStencilState = nullptr;
+        pipeline_info.pDepthStencilState = &depth_stencil_info;
         pipeline_info.pColorBlendState = &color_blend_info;
         pipeline_info.pDynamicState = nullptr;
         pipeline_info.layout = m_ctx->m_pipeline_layout;

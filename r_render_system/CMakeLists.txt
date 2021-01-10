@@ -11,6 +11,7 @@ include_directories(${X11_INCLUDE_DIR})
 
 find_package(Vulkan REQUIRED FATAL_ERROR)
 include_directories(${Vulkan_INCLUDE_DIR})
+include_directories(include/render_system)
 include_directories(src/shader)
 include_directories(src/vulkan_renderer)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -63,7 +64,9 @@ add_executable(r_render_system
     src/r_renderer.h
     src/vulkan_renderer/r_renderer.cpp
     src/window_info.h
+    src/camera.cpp
     src/vulkan_renderer/vulkan_context.h
+    src/vulkan_renderer/vulkan_context.cpp
     src/vulkan_renderer/instance_initializer.h
     src/vulkan_renderer/instance_initializer.cpp
     src/vulkan_renderer/physical_device_initializer.h
@@ -80,8 +83,8 @@ add_executable(r_render_system
     src/vulkan_renderer/command_buffer_initializer.cpp
     src/vulkan_renderer/vulkan_helper.h
     src/vulkan_renderer/vulkan_helper.cpp
-#    src/vulkan_renderer/depth_buffer_initializer.h
-#    src/vulkan_renderer/depth_buffer_initializer.cpp
+    src/vulkan_renderer/depth_buffer_initializer.h
+    src/vulkan_renderer/depth_buffer_initializer.cpp
 #    src/vulkan_renderer/uniform_buffer_initializer.h
 #    src/vulkan_renderer/uniform_buffer_initializer.cpp
 #    src/vulkan_renderer/descriptor_and_pipeline_initializer.h
@@ -102,6 +105,10 @@ add_executable(r_render_system
     src/vulkan_renderer/pipeline_initializer.cpp
     src/vulkan_renderer/descriptor_set_layout_initializer.h
     src/vulkan_renderer/descriptor_set_layout_initializer.cpp
+    src/vulkan_renderer/texture_initializer.h
+    src/vulkan_renderer/texture_initializer.cpp
+    src/resources/texture.cpp
+    src/resources/texture.h
 
 )
 

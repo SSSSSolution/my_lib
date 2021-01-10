@@ -128,12 +128,15 @@ namespace r_render_system
         swapchain_info.imageExtent = m_ctx->m_swapchain_extent;
         swapchain_info.imageArrayLayers = 1;
         swapchain_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        uint32_t queue_family_indeices[] = {m_ctx->m_graphics_queue_family_index,
+                                           m_ctx->m_present_queue_family_index};
         if (m_ctx->m_graphics_queue_family_index ==
             m_ctx->m_present_queue_family_index)
         {
             swapchain_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            swapchain_info.queueFamilyIndexCount = 0;
-            swapchain_info.pQueueFamilyIndices = nullptr;
+            swapchain_info.queueFamilyIndexCount = sizeof(queue_family_indeices);
+            swapchain_info.pQueueFamilyIndices = queue_family_indeices;
         } else
         {
             printf("not implementaion...\n");
