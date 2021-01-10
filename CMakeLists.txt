@@ -17,4 +17,6 @@ add_subdirectory(r_argument_processor)
 
 add_subdirectory(app/panda)
 
+add_subdirectory(study/ipc/linux)
+
 enable_testing()
