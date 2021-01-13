@@ -35,6 +35,9 @@ void PhysicalDeviceInitializer::enumerate_devices()
         vkGetPhysicalDeviceMemoryProperties(m_ctx->m_gpu_list[i],
                 &m_ctx->m_gpu_memory_properties_list[i]);
     }
+
+    m_ctx->m_msaa_samples = VulkanHelper::get_max_usable_sample_count(m_ctx);
+    printf("mass: %d\n", m_ctx->m_msaa_samples);
 }
 
 

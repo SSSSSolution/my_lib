@@ -18,4 +18,6 @@ add_subdirectory(study/opencv)
 
 add_subdirectory(app/panda)
 
+add_subdirectory(study/ipc/linux)
+
 enable_testing()

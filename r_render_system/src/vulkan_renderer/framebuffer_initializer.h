@@ -15,6 +15,7 @@ namespace reality
         ~FramebufferInitializer();
 
         void init_framebuffers();
+        void create_color_image();
     private:
         std::shared_ptr<VulkanContext> m_ctx;
     };

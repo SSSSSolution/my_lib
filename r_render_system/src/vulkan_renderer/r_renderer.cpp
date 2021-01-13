@@ -1,6 +1,5 @@
 #include "r_renderer.h"
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
+
 
 #define VK_USE_PLATFORM_XLIB_KHR
 #include <vulkan/vulkan.h>
@@ -11,6 +10,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <chrono>
 
 #include "vulkan_context.h"
 #include "instance_initializer.h"
@@ -30,6 +30,8 @@
 #include "descriptor_pool_initializer.h"
 #include "descriptor_set_initializer.h"
 #include "pipeline_initializer.h"
+#include "descriptor_set_layout_initializer.h"
+#include "texture_initializer.h"
 #include "vulkan_helper.h"
 #define NUM_DESCRIPTOR_SETS 1
 #define FENCE_TIMEOUT 100000000
@@ -96,18 +98,33 @@ namespace r_render_system
         /* render */
         renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
 
+        /* descriptor set layout */
+        descriptor_set_layout_init = std::make_shared<DescriptorSetLayoutInitializer>(m_ctx);
+
         /* pipeline */
         shader_init = std::make_shared<ShaderInitializer>(m_ctx);
         pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
 
+        /* depth */
+        depth_buffer_init = std::make_shared<DepthBufferInitializer>(m_ctx);
+
         /* frame buffer */
         framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
+
+        /* command pool */
+        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);        
+
+        /* texture */
+        texture_init = std::make_shared<TextureInitializer>(m_ctx);
 
         /* vertex buffer */
         vertex_buffer_init = std::make_shared<VertexBufferInitializer>(m_ctx);
 
-        /* command pool */
-        cmd_pool_init = std::make_shared<CommandPoolInitializer>(m_ctx);
+        /* descriptor pool */
+        desc_pool_init = std::make_shared<DescriptorPoolInitializer>(m_ctx);
+
+        /* descriptor sets */
+        desc_set_init = std::make_shared<DescriptorSetInitializer>(m_ctx);
 
         /* command buffer */
         cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
@@ -132,6 +149,9 @@ namespace r_render_system
           } else {
               assert(res == VK_SUCCESS);
           }
+
+          update_uniform_buffer(image_index);
+
           if (m_ctx->m_image_in_flight_fences[image_index] != VK_NULL_HANDLE)
           {
               vkWaitForFences(m_ctx->m_device, 1, &m_ctx->m_image_in_flight_fences[image_index],
@@ -159,7 +179,6 @@ namespace r_render_system
           res = vkQueueSubmit(m_ctx->m_graphics_queue, 1, &submit_info,
                                    m_ctx->m_in_flight_fences[current_frame]);
           assert(res == VK_SUCCESS);
-          printf("submit cmd\n");
 
           // return the image to the swap chain for presentaion
           VkPresentInfoKHR present_info = {};
@@ -186,14 +205,55 @@ namespace r_render_system
           current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
       }
 
+      void update_uniform_buffer(uint32_t current_image)
+      {
+           static auto start_time = std::chrono::high_resolution_clock::now();
+           auto current_time = std::chrono::high_resolution_clock::now();
+           float time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+           printf("time: %f\n", time);
+           UniformBufferObject ubo{};
+           ubo.model = glm::rotate(glm::mat4(1.0f),
+                                   0.2f * time * glm::radians(90.0f),
+                                   glm::vec3(0.0f, 0.0f, 1.0f));
+//           ubo.model = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                               glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                               glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                               glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+           ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f),
+                                  glm::vec3(0.0f, 0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f));
+//           ubo.view = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+           ubo.proj = glm::perspective(glm::radians(45.0f),
+                                       ((float)m_ctx->m_swapchain_extent.width)/
+                                       (float)m_ctx->m_swapchain_extent.height,
+                                       0.1f, 10.0f);
+           ubo.proj[1][1] *= -1;
+//           ubo.proj = glm::mat4(glm::vec4(1.0f, 0.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 1.0f, 0.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 1.0f, 0.0f),
+//                                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+           printf("%f\n", ((float)m_ctx->m_swapchain_extent.width)/
+                  (float)m_ctx->m_swapchain_extent.height);
+           void *data;
+           vkMapMemory(m_ctx->m_device, m_ctx->m_uniform_buffer_mems[current_image], 0, sizeof(ubo), 0, &data);
+            memcpy(data, &ubo, sizeof(ubo));
+           vkUnmapMemory(m_ctx->m_device, m_ctx->m_uniform_buffer_mems[current_image]);
+      }
+
       void on_window_resize()
       {
           vkDeviceWaitIdle(m_ctx->m_device);
           // clean
-          // clean framebuffer
-          framebuffer_init.reset();
           // clean command buffer
           cmd_buf_init.reset();
+          // clean framebuffer
+          framebuffer_init.reset();
+          // clean depth
+          depth_buffer_init.reset();
           // clean pipeline & clean pipeline layout
           pipeline_init.reset();
           // clean render pass
@@ -205,6 +265,7 @@ namespace r_render_system
           swapchain_init = std::make_shared<SwapchainInitializer>(m_ctx);
           renderpass_init = std::make_shared<RenderPassInitializer>(m_ctx);
           pipeline_init = std::make_shared<PipelineInitializer>(m_ctx);
+          depth_buffer_init = std::make_shared<DepthBufferInitializer>(m_ctx);
           framebuffer_init = std::make_shared<FramebufferInitializer>(m_ctx);
           cmd_buf_init = std::make_shared<CommandBufferInitializer>(m_ctx);
 
@@ -231,6 +292,8 @@ namespace r_render_system
       std::shared_ptr<DescriptorPoolInitializer> desc_pool_init;
       std::shared_ptr<DescriptorSetInitializer> desc_set_init;
       std::shared_ptr<PipelineInitializer> pipeline_init;
+      std::shared_ptr<DescriptorSetLayoutInitializer> descriptor_set_layout_init;
+      std::shared_ptr<TextureInitializer> texture_init;
   };
 
   RRenderer::RRenderer(std::shared_ptr<RWindow> window)

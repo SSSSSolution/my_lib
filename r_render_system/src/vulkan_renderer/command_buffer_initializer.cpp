@@ -45,16 +45,24 @@ void CommandBufferInitializer::init_command_buffer()
         render_begin_info.renderArea.offset = {0, 0};
         render_begin_info.renderArea.extent = m_ctx->m_swapchain_extent;
 
-        VkClearValue clear_color = { 0.0f, 0.0f, 0.0f, 1.0f};
-        render_begin_info.clearValueCount = 1;
-        render_begin_info.pClearValues = &clear_color;
+        std::vector<VkClearValue> clear_values(2);
+        clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f};
+        clear_values[1].depthStencil = {1.0f, 0};
+
+        render_begin_info.clearValueCount = clear_values.size();
+        render_begin_info.pClearValues = clear_values.data();
 
         vkCmdBeginRenderPass(m_ctx->m_cmd_bufs[i], &render_begin_info, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindPipeline(m_ctx->m_cmd_bufs[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx->m_pipeline);
         VkBuffer vertex_buffers[] = {m_ctx->m_vertex_buf.buf};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(m_ctx->m_cmd_bufs[i], 0, 1, vertex_buffers, offsets);
-        vkCmdDraw(m_ctx->m_cmd_bufs[i], vertices.size(), 1, 0, 0);
+        vkCmdBindIndexBuffer(m_ctx->m_cmd_bufs[i], m_ctx->m_index_buf.buf, 0, VK_INDEX_TYPE_UINT32);
+//        vkCmdDraw(m_ctx->m_cmd_bufs[i], vertices.size(), 1, 0, 0);
+        vkCmdBindDescriptorSets(m_ctx->m_cmd_bufs[i], VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                m_ctx->m_pipeline_layout, 0, 1,
+                                &m_ctx->m_descriptor_sets[i], 0, nullptr);
+        vkCmdDrawIndexed(m_ctx->m_cmd_bufs[i], indices.size(), 1, 0, 0, 0);
         vkCmdEndRenderPass(m_ctx->m_cmd_bufs[i]);
 
         res = vkEndCommandBuffer(m_ctx->m_cmd_bufs[i]);
