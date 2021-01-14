@@ -1,5 +1,7 @@
 #include "main_window.h"
 
+#include <thread>
+#include <chrono>
 #include <iostream>
 
 #include <QApplication>

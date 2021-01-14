@@ -20,9 +20,17 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 include_directories(include/${PROJECT_NAME})
 
+set(CMAKE_AUTOMOC ON)
+
+#qt5_wrap_cpp( MOC widget.h)
+
 add_executable(pikachu
   src/main.cpp
+  src/pikachu_app.cpp
+  src/preloading_widget.cpp
   src/main_window.cpp
+  include/pikachu/pikachu_app.h
+  include/pikachu/preloading_widget.h
 )
 
 target_link_libraries(pikachu
@@ -30,6 +38,7 @@ target_link_libraries(pikachu
     command_processor
     r_common
     Qt5::Widgets
+    pthread
 )
 
 install(TARGETS
