@@ -16,8 +16,9 @@ add_subdirectory(r_argument_processor)
 add_subdirectory(study/opencv)
 add_subdirectory(funny)
 
-
 add_subdirectory(app/panda)
+add_subdirectory(app/pikachu)
+
 
 add_subdirectory(study/ipc/linux)
 
