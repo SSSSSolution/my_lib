@@ -14,9 +14,12 @@ add_subdirectory(r_log)
 add_subdirectory(r_common)
 add_subdirectory(r_render_system)
 add_subdirectory(r_argument_processor)
-
+add_subdirectory(study/opencv)
+add_subdirectory(funny)
 
 add_subdirectory(app/panda)
+add_subdirectory(app/pikachu)
+
 
 add_subdirectory(study/ipc/linux)
 add_subdirectory(study/fbx)
