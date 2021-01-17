@@ -14,7 +14,7 @@ namespace pikachu
     {
         Q_OBJECT
     public:
-        PreloadingWindget(QApplication *app);
+        PreloadingWindget(QApplication *app, QScreen *screen);
         ~PreloadingWindget();
 
         void init();

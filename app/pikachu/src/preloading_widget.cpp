@@ -8,8 +8,8 @@ namespace reality
 {
 namespace pikachu
 {
-    PreloadingWindget::PreloadingWindget(QApplication *app)
-        : QSplashScreen(QPixmap("/home/reality/data/images/wallhaven-7232p9.jpg"))
+    PreloadingWindget::PreloadingWindget(QApplication *app, QScreen *screen)
+        : QSplashScreen(screen, QPixmap("/home/reality/data/images/pikachu.png"))
     {
         this->setWindowFlag(Qt::WindowStaysOnTopHint, true);
         this->setMouseTracking(true);

@@ -3,12 +3,14 @@
 #include <thread>
 #include <chrono>
 
+#include <QDir>
 #include <QScreen>
 #include <QDebug>
 
 #include "main_window.h"
 #include "preloading_widget.h"
 #include "pikachu_app.h"
+#include "conversion_handle.h"
 
 using namespace reality::pikachu;
 
@@ -31,15 +33,23 @@ int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
+    QDir tmp_dir;
+    if (!tmp_dir.exists("/tmp/pikachu"))
+    {
+        tmp_dir.mkpath("/tmp/pikachu");
+    }
+
     auto window_geometry = caculate_window_geometry();
 
-    std::unique_ptr<PreloadingWindget> preloading_widget(new PreloadingWindget(&app));
-    preloading_widget->setGeometry(window_geometry);
+    std::unique_ptr<PreloadingWindget> preloading_widget(new PreloadingWindget(&app,
+                                                         QApplication::screenAt(QCursor::pos())));
     preloading_widget->init();
 
-    MainWindow main_window;
-    main_window.setGeometry(preloading_widget->get_last_geometry());
+    ConversionHandle handle(nullptr);
+    MainWindow main_window(&handle);
+    main_window.setGeometry(caculate_window_geometry());
     main_window.show();
+    main_window.raise();
 
     QTimer close_timer;
     bool close_me = false;
