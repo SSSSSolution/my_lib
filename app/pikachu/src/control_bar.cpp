@@ -38,7 +38,7 @@ namespace pikachu
         m_gen_ascii_by_gray = new QPushButton("gen by gray", this);
         connect(m_gen_ascii_by_gray, &QPushButton::clicked, this, [this]()
         {
-            this->m_handle->gen_ascii_by_gray(80);
+            this->m_handle->gen_ascii_by_gray(120);
         });
 
         m_save_btn = new QPushButton("save", this);
