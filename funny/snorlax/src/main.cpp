@@ -3,11 +3,14 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
+
+#include "frame.h"
 /*
  *  sudo apt-get install ncurses-dev
  *  -lcurses
  */
 
+using namespace reality::snorlax;
 std::atomic<bool> run_loop;
 
 void hander_sigint(int signum)
@@ -28,22 +31,29 @@ int main(int argc, char **argv)
     signal(SIGINT, hander_sigint);
     WINDOW *window = initscr();
 
-    chtype str[100];
-    std::string hello_str("Hello, curses");
-    for (size_t i = 0; i < hello_str.size(); i++)
-    {
-        str[i] = hello_str[i];
-    }
 
     run_loop = true;
+    int i = 0;
     while (run_loop)
     {
-        clear();
-        box(window, '*', '-');
-        move(1, 1);
-        addchstr(str);
+        Frame frame;
+//        clear();
+        move(0, 0);
+
+
+        i++;
+        auto str_list = frame.get_frame_content();
+        std::string prt_str;
+        for (auto str : str_list)
+        {
+            prt_str.append(str);
+            prt_str.append(std::to_string(i));
+            prt_str.append("\n");
+
+        }
+        printw(prt_str.c_str());
         refresh();
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+//        std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
     }
 

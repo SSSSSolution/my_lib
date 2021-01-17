@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include "frame.h"
-
+#include "math.h"
 namespace reality
 {
     namespace snorlax
@@ -17,7 +17,10 @@ namespace reality
             Renderer();
 
             void add_model(std::shared_ptr<Model> model);
-            void draw();
+            Frame draw();
+
+        private:
+            void draw_line(unsigned char *data, int width, int height, Vec3 start, Vec3 end);
 
         private:
             std::vector<std::shared_ptr<Model>> m_model_list;
