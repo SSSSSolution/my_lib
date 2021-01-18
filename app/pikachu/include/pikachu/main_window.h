@@ -1,3 +1,6 @@
+#ifndef REALITY_PIKACHU_MAIN_WINDOW_H
+#define REALITY_PIKACHU_MAIN_WINDOW_H
+
 #include <QMainWindow>
 #include <QHBoxLayout>
 #include <QString>
@@ -31,3 +34,5 @@ namespace pikachu
     };
 }
 }
+
+#endif

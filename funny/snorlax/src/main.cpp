@@ -31,7 +31,6 @@ int main(int argc, char **argv)
     signal(SIGINT, hander_sigint);
     WINDOW *window = initscr();
 
-
     run_loop = true;
     int i = 0;
     while (run_loop)

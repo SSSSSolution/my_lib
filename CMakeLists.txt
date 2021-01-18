@@ -23,6 +23,7 @@ add_subdirectory(funny)
 
 add_subdirectory(app/panda)
 add_subdirectory(app/pikachu)
+add_subdirectory(app/charizard)
 
 
 add_subdirectory(study/ipc/linux)
