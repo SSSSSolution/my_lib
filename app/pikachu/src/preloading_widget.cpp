@@ -3,13 +3,14 @@
 #include <QObject>
 #include <QDebug>
 #include <QScreen>
-
+#include <QString>
+#include "config.h"
 namespace reality
 {
 namespace pikachu
 {
-    PreloadingWindget::PreloadingWindget(QApplication *app, QScreen *screen)
-        : QSplashScreen(screen, QPixmap("/home/reality/data/images/pikachu.png"))
+    PreloadingWindget::PreloadingWindget(std::string image_path)
+        : QSplashScreen(QPixmap(image_path.c_str()))
     {
         this->setWindowFlag(Qt::WindowStaysOnTopHint, true);
         this->setMouseTracking(true);

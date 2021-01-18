@@ -35,6 +35,8 @@ add_executable(pikachu
   src/control_bar.cpp
   src/conversion_handle.cpp
   src/about_dialog.cpp
+  src/config.cpp
+  include/pikachu/config.h
   include/pikachu/about_dialog.h
   include/pikachu/conversion_handle.h
   include/pikachu/main_window.h

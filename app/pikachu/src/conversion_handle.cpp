@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QFontDatabase>
 
+#include "config.h"
+
 namespace reality
 {
     namespace pikachu
@@ -263,7 +265,7 @@ namespace reality
 
             painter.drawText(image->rect(), Qt::AlignCenter, QString(c));
 
-            std::string file_path = "/home/reality/data/pikachu/ascii_images/";
+            std::string file_path = "/tmp/pikachu/ascii_images/";
             std::string c_str;
             c_str.push_back(i);
             file_path.append(c_str).append(".jpg");

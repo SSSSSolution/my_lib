@@ -14,7 +14,7 @@ namespace pikachu
     {
         Q_OBJECT
     public:
-        PreloadingWindget(QApplication *app, QScreen *screen);
+        PreloadingWindget(std::string image_path);
         ~PreloadingWindget();
 
         void init();
