@@ -3,6 +3,8 @@
 #include <sys/time.h>
 #include <chrono>
 #include <thread>
+#include <QDebug>
+
 namespace reality
 {
     namespace charizard
@@ -12,7 +14,7 @@ namespace reality
     RenderHandle::RenderHandle(QObject *parent)
         : QObject(parent)
     {
-
+        m_unit_cube_model = std::make_unique<UnitCubeModel>();
     }
 
     void RenderHandle::set_image(uint32_t *data, int width, int height)
@@ -55,6 +57,19 @@ namespace reality
 #endif
 
         emit draw();
+    }
+
+
+    void RenderHandle::draw_unit_cube()
+    {
+        std::vector<int> index_list = m_unit_cube_model->index_list();
+        std::vector<Vec3f> vec_list = m_unit_cube_model->vecs_list();
+        for (int i = 0; i < index_list.size(); i+=3)
+        {
+            draw_line_DDA(&present_image, vec_list[i+0], vec_list[i+1], 0xff000000);
+        }
+        std::cout << std::endl;
+        qDebug() << "draw unit cube";
     }
 
 

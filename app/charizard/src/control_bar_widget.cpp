@@ -10,6 +10,7 @@ namespace reality
             : QWidget(parent), m_handle(handle)
         {
             m_draw_line_btn = new QPushButton("draw line");
+            m_draw_cube_btn = new QPushButton("draw cube");
 
             QHBoxLayout *draw_line_point_layout = new QHBoxLayout();
             m_start_edit = new QLineEdit("start point");
@@ -18,9 +19,11 @@ namespace reality
             draw_line_point_layout->addWidget(m_end_edit);
 
             auto main_layout = new QVBoxLayout(this);
+            main_layout->setMargin(5);
             main_layout->addLayout(draw_line_point_layout);
             main_layout->addWidget(m_draw_line_btn);
-            main_layout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+            main_layout->addWidget(m_draw_cube_btn);
+            main_layout->addSpacerItem(new QSpacerItem(1, 100, QSizePolicy::Expanding, QSizePolicy::Expanding));
 
 
 
@@ -32,12 +35,12 @@ namespace reality
                 assert(str_list.size() == 2);
                 float start_x = str_list[0].toFloat(&succ);
                 assert(succ);
-                float start_y = str_list[0].toFloat(&succ);
+                float start_y = str_list[1].toFloat(&succ);
                 assert(succ);
 
                 auto end = m_end_edit->text();
                 str_list = end.split(",");
-                float end_x = str_list[1].toFloat(&succ);
+                float end_x = str_list[0].toFloat(&succ);
                 assert(succ);
                 float end_y = str_list[1].toFloat(&succ);
                 assert(succ);
@@ -48,10 +51,16 @@ namespace reality
 //                for (int i = 0; i < 10000; i++)
 //                {
 //                    start_x += 0.00001f;
+                std::cout << "start_x: " << start_x << " start_y: " << start_y
+                          << "end_x: " << end_x << " end_y: " <<end_y  << std::endl;
                     m_handle->draw_line(QPointF(start_x, start_y), QPointF(end_x, end_y));
 //                }
             });
             assert(c != nullptr);
+
+            c = connect(m_draw_cube_btn, &QPushButton::clicked, this, [this](){
+                m_handle->draw_unit_cube();
+            });
         }
     }
 }

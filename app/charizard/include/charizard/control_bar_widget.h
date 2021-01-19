@@ -26,6 +26,9 @@ namespace reality
         QLabel *m_draw_line_end_label;
         QLineEdit *m_start_edit;
         QLineEdit *m_end_edit;
+
+        // for draw cube
+        QPushButton *m_draw_cube_btn;
     };
     }
 }

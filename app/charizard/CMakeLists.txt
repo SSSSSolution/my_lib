@@ -36,6 +36,8 @@ add_executable(charizard
   include/charizard/render_handle.h
   src/soft_renderer.cpp
   include/charizard/soft_renderer.h
+  src/model.cpp
+  include/charizard/model.h
 )
 
 target_link_libraries(charizard

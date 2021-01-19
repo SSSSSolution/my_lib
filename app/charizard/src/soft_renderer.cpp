@@ -204,6 +204,11 @@ void draw_line_Bresenham(PresentImage *image, r_math::Vec2f start, r_math::Vec2f
     }
 }
 
+void draw_triangle(PresentImage *image, const std::vector<r_math::Vec3f> &vec_list, const std::vector<int> &index_list)
+{
+
+}
+
 }
 }
 

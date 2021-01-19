@@ -29,10 +29,10 @@ namespace reality
 
 //        m_image_label->setMinimumSize(400, 400);
 //        m_image_label->setStyleSheet("background-color:blue;");
-        setMinimumSize(400, 400);
+        setMinimumSize(800, 800);
 
-        m_width = 500;
-        m_height = 500;
+        m_width = 800;
+        m_height = 800;
         m_data = (uint32_t*)malloc(sizeof(uint32_t) * m_width * m_height);
         memset(m_data, 0xff, sizeof(uint32_t) * m_width * m_height);
         m_image = new QImage((const uchar *)m_data, m_width,
@@ -46,12 +46,26 @@ namespace reality
         qDebug() << "paint event";
         QPainter painter(this);
 
-        QRect target_rect = QRect(0, 0, 400, 400);
+        QRect target_rect = QRect(0, 0, m_width, m_height);
         QRect source_rect = m_image->rect();
 //        QImage image((const uchar *)m_data, m_width,
 //                                          m_height, m_width * 4, QImage::Format_ARGB32);
 //        image.
-        m_image->bits();
+//        auto c = image.pixel(0, 0);
+//        image.setPixel(0, 0, 0x12345678);
+//        image.setPixel(0, 0, c);
+
+//        c = image.pixel(0, image.height()-1);
+//        image.setPixel(0, image.height()-1, 0x12345678);
+//        image.setPixel(0, image.height()-1, c);
+
+//        image.setPixel(0, 0, 0x12345678);
+//        image.setPixel(0, 0, c);
+
+//        c = image.pixel(image.width() - 1, image.height() -1);
+//        image.setPixel(image.width() - 1, image.height()-1, 0x12345678);
+//        image.setPixel(image.width() - 1, image.height()-1, c);
+        qDebug() << "image cache key: " << m_image->cacheKey();
         painter.drawImage(target_rect, *m_image, source_rect);
     }
 
