@@ -16,7 +16,8 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 add_subdirectory(r_log)
 add_subdirectory(r_common)
-add_subdirectory(r_render_system)
+#add_subdirectory(r_render_system)
+add_subdirectory(common_lib/r_math)
 add_subdirectory(r_argument_processor)
 add_subdirectory(study/opencv)
 add_subdirectory(funny)
@@ -27,6 +28,6 @@ add_subdirectory(app/charizard)
 
 
 add_subdirectory(study/ipc/linux)
-add_subdirectory(study/fbx)
+#add_subdirectory(study/fbx)
 
 enable_testing()

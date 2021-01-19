@@ -17,6 +17,9 @@ namespace reality
         public:
             RenderWidget(RenderHandle *handle, QWidget *parent);
 
+        protected:
+            virtual void paintEvent(QPaintEvent *) override;
+
         private:
             QLabel *m_image_label;
             RenderHandle *m_handle;

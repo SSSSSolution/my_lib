@@ -25,7 +25,31 @@ namespace reality
 
 
             auto c = connect(m_draw_line_btn, &QPushButton::clicked, this, [this](){
-                m_handle->draw_line(QPoint(0, 0), QPoint(1, 1));
+                bool succ = true;
+
+                auto start = m_start_edit->text();
+                QStringList str_list = start.split(",");
+                assert(str_list.size() == 2);
+                float start_x = str_list[0].toFloat(&succ);
+                assert(succ);
+                float start_y = str_list[0].toFloat(&succ);
+                assert(succ);
+
+                auto end = m_end_edit->text();
+                str_list = end.split(",");
+                float end_x = str_list[1].toFloat(&succ);
+                assert(succ);
+                float end_y = str_list[1].toFloat(&succ);
+                assert(succ);
+//                float start_x = 0.0f;
+//                float start_y = 0.0f;
+//                float end_x = 1.0f;
+//                float end_y = 1.0f;
+//                for (int i = 0; i < 10000; i++)
+//                {
+//                    start_x += 0.00001f;
+                    m_handle->draw_line(QPointF(start_x, start_y), QPointF(end_x, end_y));
+//                }
             });
             assert(c != nullptr);
         }

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QPoint>
-
+#include "soft_renderer.h"
 namespace reality
 {
     namespace charizard
@@ -15,15 +15,13 @@ namespace reality
             RenderHandle(QObject *parent);
 
             void set_image(uint32_t *data, int width, int height);
-            void draw_line(const QPoint &start, const QPoint &end);
+            void draw_line(const QPointF &start, const QPointF &end);
 
         signals:
             void draw();
 
         private:
-            uint32_t *m_data = nullptr;
-            int m_width = 0;
-            int m_height = 0;
+            PresentImage present_image;
         };
     }
 }

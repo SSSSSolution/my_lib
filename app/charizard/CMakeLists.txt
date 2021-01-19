@@ -42,6 +42,7 @@ target_link_libraries(charizard
     Qt5::Widgets
     pthread
     ${OpenCV_LIBS}
+    r_math
 )
 
 install(TARGETS
