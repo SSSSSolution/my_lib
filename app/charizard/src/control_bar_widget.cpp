@@ -10,7 +10,10 @@ namespace reality
             : QWidget(parent), m_handle(handle)
         {
             m_draw_line_btn = new QPushButton("draw line");
+            m_draw_triangle_btn = new QPushButton("draw triangle");
             m_draw_cube_btn = new QPushButton("draw cube");
+            m_clear_btn = new QPushButton("clear");
+            m_run_btn = new QPushButton("run");
 
             QHBoxLayout *draw_line_point_layout = new QHBoxLayout();
             m_start_edit = new QLineEdit("start point");
@@ -18,13 +21,45 @@ namespace reality
             draw_line_point_layout->addWidget(m_start_edit);
             draw_line_point_layout->addWidget(m_end_edit);
 
+            QHBoxLayout *draw_triangle_layout = new QHBoxLayout();
+            m_A_point_label = new QLabel("A");
+            m_B_point_label = new QLabel("B");
+            m_C_point_label = new QLabel("C");
+            m_A_edit = new QLineEdit();
+            m_B_edit = new QLineEdit();
+            m_C_edit = new QLineEdit();
+            draw_triangle_layout->addWidget(m_A_point_label);
+            draw_triangle_layout->addWidget(m_A_edit);
+            draw_triangle_layout->addWidget(m_B_point_label);
+            draw_triangle_layout->addWidget(m_B_edit);
+            draw_triangle_layout->addWidget(m_C_point_label);
+            draw_triangle_layout->addWidget(m_C_edit);
+
+            QHBoxLayout *mass_btns_layout = new QHBoxLayout();
+            m_mass_1_btn = new QRadioButton("mass_1");
+            m_mass_4_btn = new QRadioButton("mass_4");
+            m_mass_16_btn = new QRadioButton("mass_16");
+            mass_btns_layout->addWidget(m_mass_1_btn);
+            mass_btns_layout->addWidget(m_mass_4_btn);
+            mass_btns_layout->addWidget(m_mass_16_btn);
+            m_mass_btns = new QButtonGroup();
+            m_mass_btns->setExclusive(true);
+            m_mass_btns->addButton(m_mass_1_btn);
+            m_mass_btns->addButton(m_mass_4_btn);
+            m_mass_btns->addButton(m_mass_16_btn);
+            m_mass_1_btn->setChecked(true);
+
             auto main_layout = new QVBoxLayout(this);
             main_layout->setMargin(5);
             main_layout->addLayout(draw_line_point_layout);
             main_layout->addWidget(m_draw_line_btn);
+            main_layout->addLayout(draw_triangle_layout);
+            main_layout->addWidget(m_draw_triangle_btn);
+            main_layout->addLayout(mass_btns_layout);
             main_layout->addWidget(m_draw_cube_btn);
             main_layout->addSpacerItem(new QSpacerItem(1, 100, QSizePolicy::Expanding, QSizePolicy::Expanding));
-
+            main_layout->addWidget(m_run_btn);
+            main_layout->addWidget(m_clear_btn);
 
 
             auto c = connect(m_draw_line_btn, &QPushButton::clicked, this, [this](){
@@ -61,6 +96,111 @@ namespace reality
             c = connect(m_draw_cube_btn, &QPushButton::clicked, this, [this](){
                 m_handle->draw_unit_cube();
             });
+            assert(c != nullptr);
+
+            c = connect(m_mass_btns, SIGNAL(buttonClicked(QAbstractButton *)),
+                        this, SLOT(on_mass_radio_btn_clicked(QAbstractButton *)));
+            assert(c != nullptr);
+
+            c = connect(m_draw_triangle_btn, &QPushButton::clicked, this, [this](){
+                bool succ;
+
+                auto strs = m_A_edit->text();
+                QStringList str_list = strs.split(",");
+                float A_x = str_list[0].toFloat(&succ);
+                if (!succ)
+                {
+                    A_x = 0.0f;
+                }
+                float A_y = str_list[1].toFloat(&succ);
+                if (!succ)
+                {
+                    A_y = 0.0f;
+                }
+
+                strs = m_B_edit->text();
+                str_list = strs.split(",");
+                float B_x = str_list[0].toFloat(&succ);
+                if (!succ)
+                {
+                    B_x = 1.0f;
+                }
+                float B_y = str_list[1].toFloat(&succ);
+                if (!succ)
+                {
+                    B_y = 1.0f;
+                }
+
+                strs = m_C_edit->text();
+                str_list = strs.split(",");
+                float C_x = str_list[0].toFloat(&succ);
+                if (!succ)
+                {
+                    C_x = 1.0f;
+                }
+                float C_y = str_list[1].toFloat(&succ);
+                if (!succ)
+                {
+                    C_y = 0.0f;
+                }
+
+                m_handle->draw_triangle_(QPointF(A_x, A_y), QPointF(B_x, B_y), QPointF(C_x, C_y), m_sample);
+            });
+            assert(c != nullptr);
+
+            c = connect(m_run_btn, &QPushButton::click, this, [this](){
+
+            });
+            assert(c != nullptr);
+
+             c = connect(m_clear_btn, &QPushButton::clicked, this, [this](){
+                m_handle->clear();
+             });
+             assert(c != nullptr);
+
+        }
+
+        void ControlBarWidget::on_mass_radio_btn_clicked(QAbstractButton *)
+        {
+            QList<QAbstractButton*> btn_list = m_mass_btns->buttons();
+            for (auto btn : btn_list)
+            {
+                QString strStatus = btn->isChecked() ? "Checked" : "Unchecked";
+                if (btn->isChecked())
+                {
+                    if (btn->text() == "mass_1")
+                    {
+                        m_sample = Sample_Count_1;
+                    } else if (btn->text() == "mass_4")
+                    {
+                        m_sample = Sample_Count_4;
+                    } else {
+                        m_sample = Sample_Count_16;
+                    }
+                }
+            }
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

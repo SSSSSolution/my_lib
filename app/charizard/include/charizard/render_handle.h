@@ -18,7 +18,9 @@ namespace reality
 
             void set_image(uint32_t *data, int width, int height);
             void draw_line(const QPointF &start, const QPointF &end);
+            void draw_triangle_(const QPointF &A, const QPointF &B, const QPointF &C, SampleCount sample);
             void draw_unit_cube();
+            void clear();
 
         signals:
             void draw();

@@ -7,6 +7,8 @@ add_library(r_math
     include/r_math/vec2.h
     src/vec3.cpp
     include/r_math/vec3.h
+    src/rect.cpp
+    include/r_math/rect.h
 )
 target_include_directories(r_math PUBLIC include)
 

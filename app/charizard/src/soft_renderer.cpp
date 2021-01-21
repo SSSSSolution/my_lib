@@ -1,4 +1,5 @@
 #include "soft_renderer.h"
+#include "model.h"
 
 namespace reality
 {
@@ -204,9 +205,174 @@ void draw_line_Bresenham(PresentImage *image, r_math::Vec2f start, r_math::Vec2f
     }
 }
 
-void draw_triangle(PresentImage *image, const std::vector<r_math::Vec3f> &vec_list, const std::vector<int> &index_list)
+static std::vector<Recti> get_4_sub_rects(const Recti &rect, int min_size)
 {
+    std::vector<Recti> sub_rects;
+    if (rect.width < min_size * 2 || rect.height < min_size *2)
+    {
+        return sub_rects;
+    }
 
+    int sub_width = rect.width / 2 + 1;
+    int sub_height = rect.height / 2 + 1;
+    Recti top_left_sub(rect.x, rect.y, sub_width, sub_height);
+    Recti top_right_sub(rect.x + sub_width, rect.y, sub_width, sub_height);
+    Recti bottom_left_sub(rect.x, rect.y + sub_height, sub_width, sub_height);
+    Recti bottom_right_sub(rect.x + sub_width, rect.y + sub_height, sub_width, sub_height);
+
+    sub_rects.push_back(top_left_sub);
+    sub_rects.push_back(top_right_sub);
+    sub_rects.push_back(bottom_left_sub);
+    sub_rects.push_back(bottom_right_sub);
+
+    return sub_rects;
+}
+
+static bool is_intersect(const Recti &r1, const Recti &r2)
+{
+    return !( ((r1.x + r1.width - 1 < r2.x) || (r1.y + r1.height - 1 < r2.y)) ||
+              ((r2.x + r2.width - 1 < r1.x) || (r2.y + r2.height - 1 < r1.y)) );
+}
+
+static bool is_intersect(const Recti &rect, const r_math::Vec2f &A, const r_math::Vec2f &B, const r_math::Vec2f &C)
+{
+    int left, right, top, bottom;
+    left = static_cast<int>(std::floor(std::min(std::min(A.x, B.x), C.x)));
+    right = static_cast<int>(std::ceil(std::max(std::max(A.x, B.x), C.x)));
+    top = static_cast<int>(std::floor(std::min(std::min(A.y, B.y), C.y)));
+    bottom = static_cast<int>(std::ceil(std::max(std::max(A.y, B.y), C.y)));
+
+    Recti tri_rect(left, top, right - left + 1, bottom - top + 1);
+//    std::cout << "is_intersect: " << tri_rect.x << "," << tri_rect.y << "," << tri_rect.width <<", " << tri_rect.height << std::endl
+//                                  <<  rect.x << "," << rect.y << "," << rect.width <<", " << rect.height << std::endl;
+    return is_intersect(tri_rect, rect);
+}
+
+static bool is_point_in_triangle(const Vec2f &p, const Vec2f &A, const Vec2f &B, const Vec2f &C)
+{
+    Vec2f pa(A.x - p.x, A.y - p.y);
+    Vec2f pb(B.x - p.x, B.y - p.y);
+    Vec2f pc(C.x - p.x, C.y - p.y);
+
+    auto t1 = pa.cross_product(pb);
+    auto t2 = pb.cross_product(pc);
+    auto t3 = pc.cross_product(pa);
+
+    return ((t1 > 0 && t2 > 0 && t3 > 0) ||
+            (t1 < 0 && t2 < 0 && t3 < 0));
+}
+
+static bool is_rect_in_triangle(const Recti &rect, const Vec2f &A, const Vec2f &B, const Vec2f &C)
+{
+    Vec2f top_left(rect.x, rect.y);
+    Vec2f top_right(rect.x + rect.width -1, rect.y);
+    Vec2f bottom_left(rect.x, rect.y + rect.height  -1);
+    Vec2f bottom_right(rect.x + rect.width - 1, rect.y + rect.height - 1);
+
+    if (is_point_in_triangle(top_left, A, B,C) &&
+        is_point_in_triangle(top_right, A, B,C) &&
+        is_point_in_triangle(bottom_left, A, B,C) &&
+        is_point_in_triangle(bottom_right, A, B,C))
+    {
+        return true;
+    }
+    return false;
+}
+
+#define MIN_SUB_RECT_SIZE 20
+
+static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+{
+    std::vector<Recti> sub_rects = get_4_sub_rects(sub_rect, MIN_SUB_RECT_SIZE);
+//    std::cout << "sub_rects.size: " << sub_rects.size() << std::endl;
+    if (sub_rects.size()  == 4)
+    {
+        for (auto rect : sub_rects)
+        {
+            if (is_intersect(rect, p1, p2, p3))
+            {
+                // continue sub rect
+                draw_triangle_help(image, rect, p1, p2, p3, sample, color);
+            }
+        }
+    }
+    else {
+        assert(sub_rects.size() == 0);
+        // rasterization triangle in this sub_rect
+            int start_x = sub_rect.x;
+            int end_x = sub_rect.x+sub_rect.width;
+            if (start_x < 0) start_x = 0;
+            if (end_x > image->width - 1) end_x  = image->width -1;
+
+            int start_y = sub_rect.y;
+            int end_y = sub_rect.y+sub_rect.height;
+            if (start_y < 0) start_y = 0;
+            if (end_y > image->height - 1) end_y  = image->height -1;
+
+            if (is_rect_in_triangle(sub_rect, p1, p2, p3))
+            {
+                for (int i = start_x; i < end_x; i++)
+                {
+                    for (int j = start_y; j < end_y; j++)
+                    {
+                        image->data[j * image->width + i] = color;
+                    }
+                }
+            } else {
+                for (int i = start_x; i < end_x; i++)
+                {
+                    for (int j = start_y; j < end_y; j++)
+                    {
+                        switch (sample)
+                        {
+                        case Sample_Count_1:
+                            if (is_point_in_triangle(Vec2f(i + 0.5f, j + 0.5f), p1, p2, p3))
+                            {
+                                image->data[j * image->width + i] = color;
+                            }
+                            break;
+                        case Sample_Count_4:
+                            for (int k = 0; k < 2; k++)
+                            {
+                                for (int l = 0; l < 2; l++)
+                                {
+                                    if (is_point_in_triangle(Vec2f(i + 0.25f + k * 0.5f, j + 0.25f + l * 0.5f), p1, p2, p3))
+                                    {
+                                        image->data[j * image->width + i]  += 0.25f * color;
+                                    }
+                                }
+                            }
+                            break;
+                        case Sample_Count_16:
+                            for (int k = 0; k < 4; k++)
+                            {
+                                for (int l = 0; l < 4; l++)
+                                {
+                                    if (is_point_in_triangle(Vec2f(i + 0.125f + k * 0.25f, j + 0.125f + l * 0.25f), p1, p2, p3))
+                                    {
+                                        image->data[j * image->width + i]  += 0.0625f * color;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+}
+void draw_triangle(PresentImage *image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+{
+    Vec2f A(p1.x * image->width , p1.y * image->height);
+    Vec2f B(p2.x * image->width, p2.y * image->height);
+    Vec2f C(p3.x * image->width, p3.y * image->height);
+    draw_triangle_help(image, sub_rect, A, B, C, sample, color);
+}
+
+SoftRenderer::SoftRenderer()
+{
+    auto cube_model = std::make_shared<Model>();
+    m_model_list.push_back(cube_model);
 }
 
 }

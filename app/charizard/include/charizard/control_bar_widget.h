@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
+#include <QRadioButton>
+#include <QButtonGroup>
 
 #include "render_handle.h"
 
@@ -18,6 +20,9 @@ namespace reality
     public:
         ControlBarWidget(RenderHandle *handle, QWidget *parent);
 
+    private slots:
+        void on_mass_radio_btn_clicked(QAbstractButton *);
+
     private:
         RenderHandle *m_handle;
         // for draw line
@@ -27,8 +32,28 @@ namespace reality
         QLineEdit *m_start_edit;
         QLineEdit *m_end_edit;
 
+        // for draw trianle
+        QPushButton *m_draw_triangle_btn;
+        QLabel *m_A_point_label;
+        QLabel *m_B_point_label;
+        QLabel *m_C_point_label;
+        QLineEdit *m_A_edit;
+        QLineEdit *m_B_edit;
+        QLineEdit *m_C_edit;
+        QButtonGroup *m_mass_btns;
+        QRadioButton *m_mass_1_btn;
+        QRadioButton *m_mass_4_btn;
+        QRadioButton *m_mass_16_btn;
+        SampleCount m_sample = Sample_Count_1;
+
         // for draw cube
         QPushButton *m_draw_cube_btn;
+
+        // run btn
+        QPushButton *m_run_btn;
+
+        // for clear
+        QPushButton *m_clear_btn;
     };
     }
 }

@@ -9,6 +9,12 @@ namespace reality
     struct Vec2
     {
         Vec2(T x, T y) : x(x), y(y) {}
+
+        int cross_product(const Vec2<T> &other)
+        {
+            return x * other.y - y * other.x;
+        }
+
         T x;
         T y;
     };

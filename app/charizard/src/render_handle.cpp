@@ -59,6 +59,29 @@ namespace reality
         emit draw();
     }
 
+    void RenderHandle::draw_triangle_(const QPointF &A, const QPointF &B, const QPointF &C, SampleCount sample)
+    {
+        struct timeval t1, t2;
+        double timeuse;
+        gettimeofday(&t1, nullptr);
+        std::chrono::time_point<std::chrono::system_clock> start_time = std::chrono::system_clock::now();
+
+        Vec2f a(A.x(), A.y());
+        Vec2f b(B.x(), B.y());
+        Vec2f c(C.x(), C.y());
+
+        Recti rect(0, 0, present_image.width, present_image.height);
+        draw_triangle(&present_image, rect, a, b, c, sample, 0xffff0000);
+
+        gettimeofday(&t2, nullptr);
+        std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::system_clock::now();
+
+        timeuse = (t2.tv_sec - t1.tv_sec) + (double)(t2.tv_usec - t1.tv_usec)/1000000.0;
+        std::cout << (end_time - start_time).count() << "ns" << std::endl;
+        std::cout <<  "time use: " << timeuse << "s" << std::endl;
+
+        emit draw();
+    }
 
     void RenderHandle::draw_unit_cube()
     {
@@ -66,10 +89,17 @@ namespace reality
         std::vector<Vec3f> vec_list = m_unit_cube_model->vecs_list();
         for (int i = 0; i < index_list.size(); i+=3)
         {
-            draw_line_DDA(&present_image, vec_list[i+0], vec_list[i+1], 0xff000000);
+//            draw_line_DDA(&present_image, vec_list[i+0], vec_list[i+1], 0xff000000);
         }
         std::cout << std::endl;
         qDebug() << "draw unit cube";
+    }
+
+    void RenderHandle::clear()
+    {
+        memset(present_image.data, 0xffffffff, present_image.width * present_image.height * sizeof(char32_t));
+
+        emit draw();
     }
 
 
