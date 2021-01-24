@@ -40,6 +40,8 @@ add_executable(charizard
   include/charizard/model.h
   src/exector.cpp
   include/charizard/exector.h
+  src/camera.cpp
+  include/charizard/camera.h
 )
 
 target_link_libraries(charizard

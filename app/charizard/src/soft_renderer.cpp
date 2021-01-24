@@ -205,7 +205,7 @@ void draw_line_Bresenham(PresentImage *image, r_math::Vec2f start, r_math::Vec2f
     }
 }
 
-static std::vector<Recti> get_4_sub_rects(const Recti &rect, int min_size)
+static std::vector<Recti> get_4_sub_rects(const  Recti &rect, int min_size)
 {
     std::vector<Recti> sub_rects;
     if (rect.width < min_size * 2 || rect.height < min_size *2)
