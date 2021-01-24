@@ -279,7 +279,7 @@ static bool is_rect_in_triangle(const Recti &rect, const Vec2f &A, const Vec2f &
     return false;
 }
 
-#define MIN_SUB_RECT_SIZE 20
+#define MIN_SUB_RECT_SIZE 10
 
 static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
@@ -291,6 +291,21 @@ static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_mat
         {
             if (is_intersect(rect, p1, p2, p3))
             {
+                // test
+                int start_x = rect.x;
+                int end_x = rect.x + rect.width -1;
+                int start_y = rect.y;
+                int end_y = rect.y + rect.height -1;
+                for (int i = start_y; i < end_y; i++)
+                {
+                    for (int j = start_x; j < end_x; j++)
+                    {
+                        if (i == start_y || i == end_y -1 || j == start_x || j== end_x -1)
+                        {
+                            image->data[i * image->width + j] = 0xff00ff00;
+                        }
+                    }
+                }
                 // continue sub rect
                 draw_triangle_help(image, rect, p1, p2, p3, sample, color);
             }
@@ -299,12 +314,12 @@ static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_mat
     else {
         assert(sub_rects.size() == 0);
         // rasterization triangle in this sub_rect
-            int start_x = sub_rect.x;
+            int start_x = sub_rect.x + 1;
             int end_x = sub_rect.x+sub_rect.width;
             if (start_x < 0) start_x = 0;
             if (end_x > image->width - 1) end_x  = image->width -1;
 
-            int start_y = sub_rect.y;
+            int start_y = sub_rect.y + 1;
             int end_y = sub_rect.y+sub_rect.height;
             if (start_y < 0) start_y = 0;
             if (end_y > image->height - 1) end_y  = image->height -1;

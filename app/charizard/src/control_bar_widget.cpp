@@ -148,10 +148,10 @@ namespace reality
             });
             assert(c != nullptr);
 
-            c = connect(m_run_btn, &QPushButton::click, this, [this](){
+//            c = connect(m_run_btn, &QPushButton::click, this, [this](){
 
-            });
-            assert(c != nullptr);
+//            });
+//            assert(c != nullptr);
 
              c = connect(m_clear_btn, &QPushButton::clicked, this, [this](){
                 m_handle->clear();
