@@ -52,6 +52,9 @@ namespace reality
         // run btn
         QPushButton *m_run_btn;
 
+        // stop btn
+        QPushButton *m_stop_btn;
+
         // for clear
         QPushButton *m_clear_btn;
     };

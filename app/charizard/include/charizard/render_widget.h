@@ -23,8 +23,10 @@ namespace reality
         private:
             QLabel *m_image_label;
             RenderHandle *m_handle;
+            std::shared_ptr<PresentImage> m_present_image;
+
             QImage *m_image;
-            uint32_t *m_data;
+            char32_t *m_data;
             int m_width;
             int m_height;
         };

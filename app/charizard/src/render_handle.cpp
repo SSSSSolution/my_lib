@@ -15,13 +15,13 @@ namespace reality
         : QObject(parent)
     {
         m_unit_cube_model = std::make_unique<UnitCubeModel>();
+        m_renderer = std::make_shared<SoftRenderer>();
+        m_exector = std::make_unique<Exector>();
     }
 
-    void RenderHandle::set_image(uint32_t *data, int width, int height)
+    void RenderHandle::set_image(std::shared_ptr<PresentImage> image)
     {
-        present_image.data = (char32_t *)data;
-        present_image.width = width;
-        present_image.height = height;
+        present_image = image;
 
         emit draw();
     }
@@ -30,7 +30,7 @@ namespace reality
     {
         assert(present_image.data != nullptr);
         // to do
-        draw_line_DDA(&present_image, Vec2f(start.x(), start.y()), Vec2f(end.x(), end.y()), 0xff000000);
+        draw_line_DDA(present_image, Vec2f(start.x(), start.y()), Vec2f(end.x(), end.y()), 0xff000000);
 #if 0
         // test draw_line
         struct timeval t1, t2;
@@ -93,6 +93,16 @@ namespace reality
         }
         std::cout << std::endl;
         qDebug() << "draw unit cube";
+    }
+
+    void RenderHandle::run()
+    {
+        m_exector->exec();
+    }
+
+    void RenderHandle::stop()
+    {
+        m_exector->stop();
     }
 
     void RenderHandle::clear()

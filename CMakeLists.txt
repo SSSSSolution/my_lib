@@ -16,7 +16,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 add_subdirectory(r_log)
 add_subdirectory(r_common)
-add_subdirectory(r_render_system)
+#add_subdirectory(r_render_system)
 add_subdirectory(common_lib/r_math)
 add_subdirectory(r_argument_processor)
 add_subdirectory(study/opencv)

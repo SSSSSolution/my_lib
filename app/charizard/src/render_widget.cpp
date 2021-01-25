@@ -33,12 +33,15 @@ namespace reality
 
         m_width = 800;
         m_height = 800;
-        m_data = (uint32_t*)malloc(sizeof(uint32_t) * m_width * m_height);
+        m_data = (char32_t*)malloc(sizeof(char32_t) * m_width * m_height);
         memset(m_data, 0xff, sizeof(uint32_t) * m_width * m_height);
         m_image = new QImage((const uchar *)m_data, m_width,
                              m_height, m_width * 4, QImage::Format_ARGB32);
 
-        m_handle->set_image(m_data, m_width, m_height);
+        m_present_image = std::make_shared<PresentImage>();
+        m_present_image->data = m_data;
+        m_present_image->width = m_width;
+        m_handle->set_image(m_present_image);
     }
 
     void RenderWidget::paintEvent(QPaintEvent *)

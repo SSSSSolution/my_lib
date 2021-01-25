@@ -13,7 +13,7 @@ bool compare_float(float a, float b)
 }
 
 using namespace  reality::r_math;
-void draw_line_DDA(PresentImage *image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
+void draw_line_DDA(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
 {
     assert(start.x >= 0.0f && start.x <= 1.0f);
     assert(start.y >= 0.0f && start.y <= 1.0f);
@@ -78,7 +78,7 @@ void draw_line_DDA(PresentImage *image, r_math::Vec2f start, r_math::Vec2f end, 
     }
 }
 
-void draw_line_Bresenham(PresentImage *image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
+void draw_line_Bresenham(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
 {
     assert(start.x >= 0.0f && start.x <= 1.0f);
     assert(start.y >= 0.0f && start.y <= 1.0f);
@@ -281,7 +281,7 @@ static bool is_rect_in_triangle(const Recti &rect, const Vec2f &A, const Vec2f &
 
 #define MIN_SUB_RECT_SIZE 10
 
-static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
     std::vector<Recti> sub_rects = get_4_sub_rects(sub_rect, MIN_SUB_RECT_SIZE);
 //    std::cout << "sub_rects.size: " << sub_rects.size() << std::endl;
@@ -376,7 +376,7 @@ static void draw_triangle_help(PresentImage *image, const Recti &sub_rect, r_mat
             }
         }
 }
-void draw_triangle(PresentImage *image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+void draw_triangle(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
     Vec2f A(p1.x * image->width , p1.y * image->height);
     Vec2f B(p2.x * image->width, p2.y * image->height);
@@ -388,6 +388,26 @@ SoftRenderer::SoftRenderer()
 {
     auto cube_model = std::make_shared<Model>();
     m_model_list.push_back(cube_model);
+}
+
+void SoftRenderer::draw()
+{
+    std::cout << "SoftRenerer: draw" << std::endl;
+    // wait image available
+    std::lock_guard<std::mutex>(m_present_image->lock);
+    {
+
+    }
+}
+
+void SoftRenderer::set_present_image(std::shared_ptr<PresentImage> image)
+{
+    m_present_image = image;
+}
+
+std::shared_ptr<PresentImage> SoftRenderer::present_image()
+{
+    return m_present_image;
 }
 
 }

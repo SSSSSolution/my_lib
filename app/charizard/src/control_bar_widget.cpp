@@ -14,6 +14,7 @@ namespace reality
             m_draw_cube_btn = new QPushButton("draw cube");
             m_clear_btn = new QPushButton("clear");
             m_run_btn = new QPushButton("run");
+            m_stop_btn = new QPushButton("stop");
 
             QHBoxLayout *draw_line_point_layout = new QHBoxLayout();
             m_start_edit = new QLineEdit("start point");
@@ -59,6 +60,7 @@ namespace reality
             main_layout->addWidget(m_draw_cube_btn);
             main_layout->addSpacerItem(new QSpacerItem(1, 100, QSizePolicy::Expanding, QSizePolicy::Expanding));
             main_layout->addWidget(m_run_btn);
+            main_layout->addWidget(m_stop_btn);
             main_layout->addWidget(m_clear_btn);
 
 
@@ -148,10 +150,15 @@ namespace reality
             });
             assert(c != nullptr);
 
-//            c = connect(m_run_btn, &QPushButton::click, this, [this](){
+            c = connect(m_run_btn, &QPushButton::clicked, this, [this](){
+                m_handle->run();
+            });
+            assert(c != nullptr);
 
-//            });
-//            assert(c != nullptr);
+            c = connect(m_stop_btn, &QPushButton::clicked, this, [this](){
+                m_handle->stop();
+            });
+            assert(c != nullptr);
 
              c = connect(m_clear_btn, &QPushButton::clicked, this, [this](){
                 m_handle->clear();
