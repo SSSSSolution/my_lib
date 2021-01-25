@@ -41,6 +41,7 @@ namespace reality
         m_present_image = std::make_shared<PresentImage>();
         m_present_image->data = m_data;
         m_present_image->width = m_width;
+        m_present_image->height = m_height;
         m_handle->set_image(m_present_image);
     }
 
@@ -69,6 +70,7 @@ namespace reality
 //        image.setPixel(image.width() - 1, image.height()-1, 0x12345678);
 //        image.setPixel(image.width() - 1, image.height()-1, c);
         qDebug() << "image cache key: " << m_image->cacheKey();
+        std::lock_guard<std::mutex> lock(m_present_image->lock);
         painter.drawImage(target_rect, *m_image, source_rect);
     }
 

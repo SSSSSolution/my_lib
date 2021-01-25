@@ -15,7 +15,8 @@ namespace reality
         class Exector
         {
         public:
-            Exector();
+            Exector(std::shared_ptr<SoftRenderer> renderer);
+
             void exec();
             void stop();
 
@@ -25,17 +26,10 @@ namespace reality
 
             std::atomic<bool> m_is_loop;
             std::shared_ptr<std::thread> m_loop_thread;
-            std::function<void(const PresentImage &)> m_draw_callback;
+            std::function<void(std::shared_ptr<PresentImage>)> m_draw_callback = nullptr;
 
         };
     }
 }
-
-
-
-
-
-
-
 
 #endif

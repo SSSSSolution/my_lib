@@ -16,19 +16,20 @@ namespace reality
     {
         m_unit_cube_model = std::make_unique<UnitCubeModel>();
         m_renderer = std::make_shared<SoftRenderer>();
-        m_exector = std::make_unique<Exector>();
+        m_exector = std::make_unique<Exector>(m_renderer);
     }
 
     void RenderHandle::set_image(std::shared_ptr<PresentImage> image)
     {
         present_image = image;
+        m_renderer->set_present_image(present_image);
 
         emit draw();
     }
 
     void RenderHandle::draw_line(const QPointF &start, const QPointF &end)
     {
-        assert(present_image.data != nullptr);
+        assert(present_image->data != nullptr);
         // to do
         draw_line_DDA(present_image, Vec2f(start.x(), start.y()), Vec2f(end.x(), end.y()), 0xff000000);
 #if 0
@@ -70,8 +71,8 @@ namespace reality
         Vec2f b(B.x(), B.y());
         Vec2f c(C.x(), C.y());
 
-        Recti rect(0, 0, present_image.width, present_image.height);
-        draw_triangle(&present_image, rect, a, b, c, sample, 0xffff0000);
+        Recti rect(0, 0, present_image->width, present_image->height);
+        draw_triangle(present_image, rect, a, b, c, sample, 0xffff0000);
 
         gettimeofday(&t2, nullptr);
         std::chrono::time_point<std::chrono::system_clock> end_time = std::chrono::system_clock::now();
@@ -107,7 +108,7 @@ namespace reality
 
     void RenderHandle::clear()
     {
-        memset(present_image.data, 0xffffffff, present_image.width * present_image.height * sizeof(char32_t));
+        memset(present_image->data, 0xffffffff, present_image->width * present_image->height * sizeof(char32_t));
 
         emit draw();
     }

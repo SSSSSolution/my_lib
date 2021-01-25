@@ -6,8 +6,9 @@ namespace reality
 {
     namespace charizard
     {
-    Exector::Exector() {}
-
+    Exector::Exector(std::shared_ptr<SoftRenderer> renderer)
+        : m_renderer(renderer)
+    {}
 
     void Exector::exec()
     {

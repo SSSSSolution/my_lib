@@ -284,7 +284,6 @@ static bool is_rect_in_triangle(const Recti &rect, const Vec2f &A, const Vec2f &
 static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
     std::vector<Recti> sub_rects = get_4_sub_rects(sub_rect, MIN_SUB_RECT_SIZE);
-//    std::cout << "sub_rects.size: " << sub_rects.size() << std::endl;
     if (sub_rects.size()  == 4)
     {
         for (auto rect : sub_rects)
@@ -376,6 +375,7 @@ static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti 
             }
         }
 }
+
 void draw_triangle(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
     Vec2f A(p1.x * image->width , p1.y * image->height);
