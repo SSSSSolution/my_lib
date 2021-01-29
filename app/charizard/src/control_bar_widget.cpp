@@ -15,6 +15,7 @@ namespace reality
             m_clear_btn = new QPushButton("clear");
             m_run_btn = new QPushButton("run");
             m_stop_btn = new QPushButton("stop");
+            m_test_native_btn = new QPushButton("test native widget");
 
             QHBoxLayout *draw_line_point_layout = new QHBoxLayout();
             m_start_edit = new QLineEdit("start point");
@@ -61,6 +62,7 @@ namespace reality
             main_layout->addSpacerItem(new QSpacerItem(1, 100, QSizePolicy::Expanding, QSizePolicy::Expanding));
             main_layout->addWidget(m_run_btn);
             main_layout->addWidget(m_stop_btn);
+            main_layout->addWidget(m_test_native_btn);
             main_layout->addWidget(m_clear_btn);
 
 
@@ -157,6 +159,12 @@ namespace reality
 
             c = connect(m_stop_btn, &QPushButton::clicked, this, [this](){
                 m_handle->stop();
+            });
+            assert(c != nullptr);
+
+            c = connect(m_test_native_btn, &QPushButton::clicked, this, [this](){
+                std::cout << "control bar widget: emit test_native_widget" << std::endl;
+                emit test_native_widget();
             });
             assert(c != nullptr);
 

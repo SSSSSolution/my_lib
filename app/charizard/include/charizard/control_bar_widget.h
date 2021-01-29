@@ -23,6 +23,9 @@ namespace reality
     private slots:
         void on_mass_radio_btn_clicked(QAbstractButton *);
 
+    signals:
+        void test_native_widget();
+
     private:
         RenderHandle *m_handle;
         // for draw line
@@ -54,6 +57,9 @@ namespace reality
 
         // stop btn
         QPushButton *m_stop_btn;
+
+        // test native widget btn
+        QPushButton *m_test_native_btn;
 
         // for clear
         QPushButton *m_clear_btn;

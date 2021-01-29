@@ -4,6 +4,7 @@
 #include "render_widget.h"
 #include "control_bar_widget.h"
 #include "render_handle.h"
+#include "native_widget.h"
 
 #include <QMainWindow>
 
@@ -18,10 +19,14 @@ namespace reality
         MainWindow();
         ~MainWindow();
 
+    protected:
+        void showEvent(QShowEvent *e);
+
     private:
         RenderHandle *m_handle;
 
         RenderWidget *m_render_widget;
+        NativeRenderWidget *m_native_widget;
         ControlBarWidget *m_control_bar_widget;
     };
     }

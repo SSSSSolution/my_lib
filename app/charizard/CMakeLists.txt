@@ -18,8 +18,10 @@ endif()
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(OpenCV REQUIRED)
+find_package(X11 REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${X11_INCLUDE_DIRS})
 include_directories(include/${PROJECT_NAME})
 
 set(CMAKE_AUTOMOC ON)
@@ -42,6 +44,8 @@ add_executable(charizard
   include/charizard/exector.h
   src/camera.cpp
   include/charizard/camera.h
+  src/native_widget.cpp
+  include/charizard/native_widget.h
 )
 
 target_link_libraries(charizard
@@ -49,6 +53,8 @@ target_link_libraries(charizard
     pthread
     ${OpenCV_LIBS}
     r_math
+    r_log
+    X11
 )
 
 install(TARGETS
