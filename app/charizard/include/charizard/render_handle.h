@@ -8,7 +8,8 @@
 #include "model.h"
 #include "exector.h"
 #include "soft_renderer.h"
-
+#include "native_widget.h"
+#include "scenes.h"
 namespace reality
 {
     namespace charizard
@@ -17,27 +18,24 @@ namespace reality
         {
             Q_OBJECT
         public:
-            RenderHandle(QObject *parent);
+            RenderHandle(NativeRenderWidget *native_widget, QObject *parent);
 
-            void set_image(std::shared_ptr<PresentImage> image);
             void draw_line(const QPointF &start, const QPointF &end);
             void draw_triangle_(const QPointF &A, const QPointF &B, const QPointF &C, SampleCount sample);
-            void draw_unit_cube();
 
             void run();
             void stop();
 
             void clear();
 
-        signals:
-            void draw();
-
         private:
-            std::shared_ptr<PresentImage> present_image;
-            std::unique_ptr<UnitCubeModel> m_unit_cube_model;
-
+            NativeRenderWidget *m_native_widget;
             std::shared_ptr<SoftRenderer> m_renderer;
             std::unique_ptr<Exector> m_exector;
+            std::shared_ptr<Scenes> m_scenes;
+            std::shared_ptr<std::thread> t;
+
+            r_math::Vec2f A, B, C;
         };
     }
 }

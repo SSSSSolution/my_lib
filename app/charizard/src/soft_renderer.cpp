@@ -1,5 +1,6 @@
 #include "soft_renderer.h"
 #include "model.h"
+#include "rlog.h"
 
 namespace reality
 {
@@ -13,7 +14,7 @@ bool compare_float(float a, float b)
 }
 
 using namespace  reality::r_math;
-void draw_line_DDA(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
+void draw_line_DDA(std::shared_ptr<FrameBuffer> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
 {
     assert(start.x >= 0.0f && start.x <= 1.0f);
     assert(start.y >= 0.0f && start.y <= 1.0f);
@@ -78,7 +79,7 @@ void draw_line_DDA(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_m
     }
 }
 
-void draw_line_Bresenham(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
+void draw_line_Bresenham(std::shared_ptr<FrameBuffer>image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
 {
     assert(start.x >= 0.0f && start.x <= 1.0f);
     assert(start.y >= 0.0f && start.y <= 1.0f);
@@ -281,7 +282,7 @@ static bool is_rect_in_triangle(const Recti &rect, const Vec2f &A, const Vec2f &
 
 #define MIN_SUB_RECT_SIZE 10
 
-static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+static void draw_triangle_help(std::shared_ptr<FrameBuffer> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
     std::vector<Recti> sub_rects = get_4_sub_rects(sub_rect, MIN_SUB_RECT_SIZE);
     if (sub_rects.size()  == 4)
@@ -291,20 +292,20 @@ static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti 
             if (is_intersect(rect, p1, p2, p3))
             {
                 // test
-                int start_x = rect.x;
-                int end_x = rect.x + rect.width -1;
-                int start_y = rect.y;
-                int end_y = rect.y + rect.height -1;
-                for (int i = start_y; i < end_y; i++)
-                {
-                    for (int j = start_x; j < end_x; j++)
-                    {
-                        if (i == start_y || i == end_y -1 || j == start_x || j== end_x -1)
-                        {
-                            image->data[i * image->width + j] = 0xff00ff00;
-                        }
-                    }
-                }
+//                int start_x = rect.x;
+//                int end_x = rect.x + rect.width -1;
+//                int start_y = rect.y;
+//                int end_y = rect.y + rect.height -1;
+//                for (int i = start_y; i < end_y; i++)
+//                {
+//                    for (int j = start_x; j < end_x; j++)
+//                    {
+//                        if (i == start_y || i == end_y -1 || j == start_x || j== end_x -1)
+//                        {
+//                            image->data[i * image->width + j] = 0xff00ff00;
+//                        }
+//                    }
+//                }
                 // continue sub rect
                 draw_triangle_help(image, rect, p1, p2, p3, sample, color);
             }
@@ -313,12 +314,12 @@ static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti 
     else {
         assert(sub_rects.size() == 0);
         // rasterization triangle in this sub_rect
-            int start_x = sub_rect.x + 1;
+            int start_x = sub_rect.x;
             int end_x = sub_rect.x+sub_rect.width;
             if (start_x < 0) start_x = 0;
             if (end_x > image->width - 1) end_x  = image->width -1;
 
-            int start_y = sub_rect.y + 1;
+            int start_y = sub_rect.y;
             int end_y = sub_rect.y+sub_rect.height;
             if (start_y < 0) start_y = 0;
             if (end_y > image->height - 1) end_y  = image->height -1;
@@ -376,38 +377,133 @@ static void draw_triangle_help(std::shared_ptr<PresentImage> image, const Recti 
         }
 }
 
-void draw_triangle(std::shared_ptr<PresentImage> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
+void draw_triangle(std::shared_ptr<FrameBuffer> image, const Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color)
 {
-    Vec2f A(p1.x * image->width , p1.y * image->height);
-    Vec2f B(p2.x * image->width, p2.y * image->height);
-    Vec2f C(p3.x * image->width, p3.y * image->height);
-    draw_triangle_help(image, sub_rect, A, B, C, sample, color);
+//    Vec2f A(p1.x * image->width , p1.y * image->height);
+//    Vec2f B(p2.x * image->width, p2.y * image->height);
+//    Vec2f C(p3.x * image->width, p3.y * image->height);
+    draw_triangle_help(image, sub_rect, p1, p2, p3, sample, color);
 }
 
-SoftRenderer::SoftRenderer()
-{
-    auto cube_model = std::make_shared<Model>();
-    m_model_list.push_back(cube_model);
-}
+// primitive
+Primitive::Primitive(std::vector<Vec4f> &vecs)
+    : m_vecs(vecs)
+{}
 
-void SoftRenderer::draw()
+void Primitive::transform(Mat4f mat4)
 {
-    std::cout << "SoftRenerer: draw" << std::endl;
-    // wait image available
-    std::lock_guard<std::mutex>(m_present_image->lock);
+    for (auto vec4 : m_vecs)
     {
-
+        auto t_vec4 = mat4 * vec4;
+        m_project_vecs.push_back(Vec2f(t_vec4.x, t_vec4.y));
     }
 }
 
-void SoftRenderer::set_present_image(std::shared_ptr<PresentImage> image)
+// triangle primitive
+TrianglePrimitvie::TrianglePrimitvie(std::vector<Vec4f> &vecs)
+    : Primitive(vecs)
 {
-    m_present_image = image;
+    assert(m_vecs.size() == 3);
 }
 
-std::shared_ptr<PresentImage> SoftRenderer::present_image()
+// soft renderer
+SoftRenderer::SoftRenderer()
 {
-    return m_present_image;
+
+}
+
+void SoftRenderer::set_scenes(std::shared_ptr<Scenes> scense)
+{
+    m_scenes = scense;
+}
+
+void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
+{
+    if (m_scenes == nullptr)
+    {
+        RLOG(ERROR, "SoftRenderer draw failed: not specific scenes to draw");
+        return;
+    }
+
+    // todo draw scenes
+    // get camera transform
+    Mat4f camera_transform = m_scenes->m_cur_camera->transformation();
+    // draw models
+    std::vector<Primitive> primitives;
+    for (const auto &model : m_scenes->m_model_list)
+    {
+        std::vector<Vec4f> model_vecs = model->vecs_list();
+        std::vector<int> model_indexs = model->index_list();
+        for (unsigned int i = 0; i < model->index_list().size(); i += 3)
+//        for (unsigned int i = 0; i < 3; i += 3)
+        {
+            std::vector<Vec4f> vecs;
+            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i) - 1));
+            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i+1) - 1));
+            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i+2) - 1));
+
+//            std::cout << vecs[0].x << ", " << vecs[0].y  << ", "
+//                      << vecs[0].z  << ", " << vecs[0].w << std::endl;
+//            std::cout << vecs[1].x << ", " << vecs[1].y  << ", "
+//                      << vecs[1].z  << ", " << vecs[1].w << std::endl;
+//            std::cout << vecs[2].x << ", " << vecs[2].y << ", "
+//                      << vecs[2].z << ", " << vecs[2].w << std::endl;
+
+            primitives.push_back(Primitive(vecs));
+        }
+    }
+    // clip
+    // 1. NDC
+    for (auto &p : primitives)
+    {
+        for (auto &v : p.m_vecs)
+        {
+            v.x = v.x / v.w;
+            v.y = v.y / v.w;
+            v.z = v.z / v.w;
+            v.w = v.w / v.w;
+        }
+        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
+                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
+        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
+                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
+        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
+                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
+    }
+
+    // NDC -> screen
+    Mat4f ndc2scr = Mat4f::scale(fb->width / 2.0f, fb->height / 2.0f, 1.0f) *
+                    Mat4f::translate(1.0f, 1.0f, 0.0f) *
+                    Mat4f::reflect_x();
+    Recti sub_rect = Recti(0, 0, fb->width, fb->height);
+
+    for (auto &p : primitives)
+    {
+        for ( auto &v : p.m_vecs)
+        {
+            v = ndc2scr * v;
+        }
+        Vec2f A(p.m_vecs[0].x , p.m_vecs[0].y);
+        Vec2f B(p.m_vecs[1].x, p.m_vecs[1].y);
+        Vec2f C(p.m_vecs[2].x, p.m_vecs[2].y);
+        draw_triangle(fb, sub_rect, A, B, C, Sample_Count_1, 0xff00ff00);
+//        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
+//                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
+//        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
+//                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
+//        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
+//                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
+//        std::cout << p.m_vecs[0].x / p.m_vecs[0].w << ", " << p.m_vecs[0].y / p.m_vecs[0].w << ", "
+//                  << p.m_vecs[0].z / p.m_vecs[0].w << ", " << p.m_vecs[0].w / p.m_vecs[0].w << std::endl;
+//        std::cout << p.m_vecs[1].x / p.m_vecs[1].w << ", " << p.m_vecs[1].y / p.m_vecs[1].w << ", "
+//                  << p.m_vecs[1].z / p.m_vecs[1].w << ", " << p.m_vecs[1].w / p.m_vecs[1].w << std::endl;
+//        std::cout << p.m_vecs[2].x / p.m_vecs[2].w << ", " << p.m_vecs[2].y / p.m_vecs[2].w << ", "
+//                  << p.m_vecs[2].z / p.m_vecs[2].w << ", " << p.m_vecs[2].w / p.m_vecs[2].w << std::endl;
+    }
+
+
+
+
 }
 
 }

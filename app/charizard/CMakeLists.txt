@@ -30,8 +30,6 @@ add_executable(charizard
   src/main.cpp
   src/main_window.cpp
   include/charizard/main_window.h
-  src/render_widget.cpp
-  include/charizard/render_widget.h
   src/control_bar_widget.cpp
   include/charizard/control_bar_widget.h
   src/render_handle.cpp
@@ -46,6 +44,10 @@ add_executable(charizard
   include/charizard/camera.h
   src/native_widget.cpp
   include/charizard/native_widget.h
+  src/scenes.cpp
+  include/charizard/scenes.h
+  src/types.cpp
+  include/charizard/types.h
 )
 
 target_link_libraries(charizard

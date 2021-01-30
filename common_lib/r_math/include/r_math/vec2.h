@@ -8,6 +8,7 @@ namespace reality
     template <typename T>
     struct Vec2
     {
+        Vec2() : x(static_cast<T>(0)), y(static_cast<T>(0)) {}
         Vec2(T x, T y) : x(x), y(y) {}
 
         int cross_product(const Vec2<T> &other)

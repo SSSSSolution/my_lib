@@ -1,4 +1,5 @@
 #include "control_bar_widget.h"
+#include "rlog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -98,7 +99,7 @@ namespace reality
             assert(c != nullptr);
 
             c = connect(m_draw_cube_btn, &QPushButton::clicked, this, [this](){
-                m_handle->draw_unit_cube();
+               RLOG(WARN, "draw_cube has not implementate");
             });
             assert(c != nullptr);
 
@@ -163,8 +164,7 @@ namespace reality
             assert(c != nullptr);
 
             c = connect(m_test_native_btn, &QPushButton::clicked, this, [this](){
-                std::cout << "control bar widget: emit test_native_widget" << std::endl;
-                emit test_native_widget();
+
             });
             assert(c != nullptr);
 

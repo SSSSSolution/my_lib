@@ -1,7 +1,6 @@
 #ifndef REALITY_CHARIZARD_MAIN_WINDOW_h
 #define REALITY_CHARIZARD_MAIN_WINDOW_h
 
-#include "render_widget.h"
 #include "control_bar_widget.h"
 #include "render_handle.h"
 #include "native_widget.h"
@@ -25,7 +24,6 @@ namespace reality
     private:
         RenderHandle *m_handle;
 
-        RenderWidget *m_render_widget;
         NativeRenderWidget *m_native_widget;
         ControlBarWidget *m_control_bar_widget;
     };

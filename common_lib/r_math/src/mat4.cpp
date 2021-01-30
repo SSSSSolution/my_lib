@@ -76,6 +76,42 @@ namespace reality
             return proj;
         }
 
+        Mat4f Mat4f::translate(float x, float y, float z)
+        {
+            Mat4f tran;
+            tran.data[0][0] = 1.0f;
+            tran.data[1][1] = 1.0f;
+            tran.data[2][2] = 1.0f;
+            tran.data[3][3] = 1.0f;
+            tran.data[0][3] = x;
+            tran.data[1][3] = y;
+            tran.data[2][3] = z;
+
+            return tran;
+        }
+
+        Mat4f Mat4f::scale(float x, float y, float z)
+        {
+            Mat4f scal;
+            scal.data[0][0] = x;
+            scal.data[1][1] = y;
+            scal.data[2][2] = z;
+            scal.data[3][3] = 1.0f;
+
+            return scal;
+        }
+
+        Mat4f Mat4f::reflect_x()
+        {
+            Mat4f rx;
+            rx.data[0][0] = 1.0f;
+            rx.data[1][1] = -1.0f;
+            rx.data[2][2] = 1.0f;
+            rx.data[3][3] = 1.0f;
+
+            return rx;
+        }
+
         std::ostream &operator<<(std::ostream &os, const Mat4f &mat)
         {
             os << "[ ";

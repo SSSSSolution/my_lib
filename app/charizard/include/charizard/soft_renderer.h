@@ -1,10 +1,12 @@
 #ifndef REALITY_CHARIZARD_SOFT_RENDERER_H
 #define REALITY_CHARIZARD_SOFT_RENDERER_H
 
-#include "model.h"
+#include "scenes.h"
+#include "types.h"
 
 #include "r_math/vec2.h"
 #include "r_math/vec3.h"
+#include "r_math/vec4.h"
 #include "r_math/rect.h"
 
 #include <iostream>
@@ -19,15 +21,6 @@ namespace reality
 {
 namespace charizard {
 
-struct PresentImage
-{
-    char32_t *data;
-    int width;
-    int height;
-
-    std::mutex lock;
-};
-
 enum SampleCount
 {
     Sample_Count_1 = 1,
@@ -40,30 +33,44 @@ enum SampleCount
 /*
  * implemention of DDA(Digital Differential Analyzer) alogrithm
  */
-void draw_line_DDA(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color);
+void draw_line_DDA(std::shared_ptr<FrameBuffer> fb, r_math::Vec2f start, r_math::Vec2f end, char32_t color);
 
 /*
  * implemention of Bresenham alogrithm
  */
-void draw_line_Bresenham(std::shared_ptr<PresentImage> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color);
+void draw_line_Bresenham(std::shared_ptr<FrameBuffer> fb, r_math::Vec2f start, r_math::Vec2f end, char32_t color);
 
 /*
  *  rasteration triangle
  */
-void draw_triangle(std::shared_ptr<PresentImage> image, const r_math::Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color);
+void draw_triangle(std::shared_ptr<FrameBuffer> fb, const r_math::Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color);
+
+struct Primitive
+{
+    Primitive(std::vector<r_math::Vec4f> &vecs);
+
+    void transform(r_math::Mat4f mat4);
+
+    std::vector<r_math::Vec4f> m_vecs;
+    std::vector<r_math::Vec2f> m_project_vecs;
+};
+
+struct TrianglePrimitvie : public Primitive
+{
+    TrianglePrimitvie(std::vector<r_math::Vec4f> &vecs);
+
+};
 
 class SoftRenderer
 {
 public:
     SoftRenderer();
-    void draw();
-    std::shared_ptr<PresentImage> present_image();
-    void set_present_image(std::shared_ptr<PresentImage> image);
+
+    void set_scenes(std::shared_ptr<Scenes> scense);
+    void draw(std::shared_ptr<FrameBuffer> fb);
 
 private:
-    std::vector<std::shared_ptr<Model>> m_model_list;
-
-    std::shared_ptr<PresentImage> m_present_image;
+    std::shared_ptr<Scenes> m_scenes;
 };
 
 }
