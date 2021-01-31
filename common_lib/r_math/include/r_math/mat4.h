@@ -2,6 +2,7 @@
 #define REALITY_MATH_MAT4_H
 
 #include "r_math/vec4.h"
+#include "r_math/vec3.h"
 #include <iostream>
 
 namespace reality
@@ -22,6 +23,7 @@ namespace reality
             static Mat4f projection(float fov, float aspect, float near, float far);
             static Mat4f translate(float x, float y, float z);
             static Mat4f scale(float x, float y, float z);
+            static Mat4f rotate(float angle, Vec3f axis);
             static Mat4f reflect_x();
 
             friend std::ostream &operator<<(std::ostream &os, const Mat4f &mat);

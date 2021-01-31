@@ -16,23 +16,20 @@ bool compare_float(float a, float b)
 using namespace  reality::r_math;
 void draw_line_DDA(std::shared_ptr<FrameBuffer> image, r_math::Vec2f start, r_math::Vec2f end, char32_t color)
 {
-    assert(start.x >= 0.0f && start.x <= 1.0f);
-    assert(start.y >= 0.0f && start.y <= 1.0f);
-    assert(end.x >= 0.0f && end.x <= 1.0f);
-    assert(end.y >= 0.0f && end.y <= 1.0f);
 
-    Vec2i start_pix(static_cast<int>(round(start.x * image->width)),
-                    static_cast<int>(round(start.y * image->height)));
-    Vec2i end_pix(static_cast<int>(round(end.x * image->width)),
-                  static_cast<int>(round(end.y * image->height)));
-    if (start_pix.x < 0) start_pix.x = 0;
-    if (start_pix.x >= image->width) start_pix.x = image->width - 1;
-    if (start_pix.y < 0) start_pix.y = 0;
-    if (start_pix.y >= image->height) start_pix.y = image->height - 1;
-    if (end_pix.x < 0) end_pix.x = 0;
-    if (end_pix.x >= image->width) end_pix.x = image->width - 1;
-    if (end_pix.y < 0) end_pix.y = 0;
-    if (end_pix.y >= image->height) end_pix.y = image->height - 1;
+
+    Vec2i start_pix(static_cast<int>(round(start.x)),
+                    static_cast<int>(round(start.y)));
+    Vec2i end_pix(static_cast<int>(round(end.x)),
+                  static_cast<int>(round(end.y)));
+//    if (start_pix.x < 0) start_pix.x = 0;
+//    if (start_pix.x >= image->width) start_pix.x = image->width - 1;
+//    if (start_pix.y < 0) start_pix.y = 0;
+//    if (start_pix.y >= image->height) start_pix.y = image->height - 1;
+//    if (end_pix.x < 0) end_pix.x = 0;
+//    if (end_pix.x >= image->width) end_pix.x = image->width - 1;
+//    if (end_pix.y < 0) end_pix.y = 0;
+//    if (end_pix.y >= image->height) end_pix.y = image->height - 1;
 
     int x0, x1, y0, y1;
     float k = static_cast<float>(end.y - start.y)/static_cast<float>(end.x - start.x);
@@ -53,7 +50,10 @@ void draw_line_DDA(std::shared_ptr<FrameBuffer> image, r_math::Vec2f start, r_ma
         float j = y0;
         for (int i = x0; i <= x1; i++)
         {
-            image->data[static_cast<int>(round(j)) * image->width + i] = color;
+            if (round(j) < image->height && i < image->width)
+            {
+                image->data[static_cast<int>(round(j)) * image->width + i] = color;
+            }
             j += k;
         }
     } else {
@@ -73,7 +73,10 @@ void draw_line_DDA(std::shared_ptr<FrameBuffer> image, r_math::Vec2f start, r_ma
         float j = x0;
         for (int i = y0; i <= y1; i++)
         {
+            if (i < image->height && j < image->width)
+            {
             image->data[i * image->width + (static_cast<int>(j))] = color;
+            }
             j += k;
         }
     }
@@ -432,15 +435,16 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
     std::vector<Primitive> primitives;
     for (const auto &model : m_scenes->m_model_list)
     {
+        Mat4f model_trans = model->transformation();
         std::vector<Vec4f> model_vecs = model->vecs_list();
         std::vector<int> model_indexs = model->index_list();
         for (unsigned int i = 0; i < model->index_list().size(); i += 3)
 //        for (unsigned int i = 0; i < 3; i += 3)
         {
             std::vector<Vec4f> vecs;
-            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i) - 1));
-            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i+1) - 1));
-            vecs.push_back(camera_transform * model_vecs.at(model_indexs.at(i+2) - 1));
+            vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i) - 1));
+            vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i+1) - 1));
+            vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i+2) - 1));
 
 //            std::cout << vecs[0].x << ", " << vecs[0].y  << ", "
 //                      << vecs[0].z  << ", " << vecs[0].w << std::endl;
@@ -463,12 +467,12 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
             v.z = v.z / v.w;
             v.w = v.w / v.w;
         }
-        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
-                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
-        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
-                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
-        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
-                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
+//        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
+//                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
+//        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
+//                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
+//        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
+//                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
     }
 
     // NDC -> screen
@@ -486,7 +490,10 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
         Vec2f A(p.m_vecs[0].x , p.m_vecs[0].y);
         Vec2f B(p.m_vecs[1].x, p.m_vecs[1].y);
         Vec2f C(p.m_vecs[2].x, p.m_vecs[2].y);
-        draw_triangle(fb, sub_rect, A, B, C, Sample_Count_1, 0xff00ff00);
+//        draw_triangle(fb, sub_rect, A, B, C, Sample_Count_1, 0xff00ff00);
+        draw_line_DDA(fb, A, B, 0xffff0000);
+        draw_line_DDA(fb, B, C, 0xffff0000);
+        draw_line_DDA(fb, C, A, 0xffff0000);
 //        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
 //                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
 //        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "

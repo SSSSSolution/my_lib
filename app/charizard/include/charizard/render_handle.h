@@ -34,6 +34,9 @@ namespace reality
             std::unique_ptr<Exector> m_exector;
             std::shared_ptr<Scenes> m_scenes;
             std::shared_ptr<std::thread> t;
+            std::shared_ptr<Model> m_cube_model1;
+            std::shared_ptr<Model> m_cube_model2;
+            std::shared_ptr<Model> m_cube_model3;
 
             r_math::Vec2f A, B, C;
         };

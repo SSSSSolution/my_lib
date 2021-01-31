@@ -47,9 +47,15 @@ namespace reality
         // init scenes
         auto camera = std::make_shared<Camera>("camera", 3.14159f/3.0f, 1.0f, 0.1f, 10.0f);
         m_scenes->set_cur_camera(camera);
-        camera->move_to(Vec3f(1.0f, 0.0f, 0.0f));
-        auto cube_model = std::make_shared<UnitCubeModel>("cube");
-        m_scenes->add_model(cube_model);
+        camera->move_to(Vec3f(0.0f, 1.0f, 5.0f));
+        m_cube_model1 = std::make_shared<UnitCubeModel>("cube");
+        m_scenes->add_model(m_cube_model1);
+        m_cube_model2 = std::make_shared<UnitCubeModel>("cube");
+        m_cube_model2->move_to(-2.0f, 1.0f, -1.0f);
+        m_scenes->add_model(m_cube_model2);
+        m_cube_model3 = std::make_shared<UnitCubeModel>("cube");
+        m_scenes->add_model(m_cube_model3);
+        m_cube_model3->move_to(2.0f, 1.0f, -2.0f);
         m_renderer->set_scenes(m_scenes);
 
         m_native_widget = native_widget;
@@ -81,6 +87,20 @@ namespace reality
             m_renderer->draw(fb);
 
             m_native_widget->show_next_framebuffer();
+
+//            static float y = 0.0f;
+//            y += 0.01f;
+//            m_cube_model->move_to(0.0f, y, 0.0f);
+            static float angle = 0;
+            angle += 3.141592f/1800;
+            Vec3f axis1(1.0f, -1.0f, 1.0f);
+            m_cube_model1->rotate(angle, axis1);
+
+            Vec3f axis2(1.0f, 0.0f, 0.0f);
+            m_cube_model2->rotate(angle, axis2);
+
+            Vec3f axis3(0.0f, -1.0f, 0.0f);
+            m_cube_model3->rotate(angle, axis3);
 
             struct timeval time;
             gettimeofday(&time, nullptr);

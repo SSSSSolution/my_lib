@@ -6,13 +6,39 @@ namespace reality
     {
         using namespace reality::r_math;
         Model::Model(std::string id)
-            : m_id(id)
+            : m_id(id),
+              m_world_position(0.0f, 0.0f, 0.0f),
+              m_angle(0.0f),
+              m_axis(0.0f, 0.0f, 1.0f)
         {
+            calculate_transformation();
         }
 
         std::string &Model::id()
         {
             return m_id;
+        }
+
+        Mat4f &Model::transformation()
+        {
+            return m_transformation;
+        }
+
+        void Model::move_to(float x, float y, float z)
+        {
+            m_world_position.x = x;
+            m_world_position.y = y;
+            m_world_position.z = z;
+
+            calculate_transformation();
+        }
+
+        void Model::rotate(float angle, Vec3f axis)
+        {
+            m_angle = angle;
+            m_axis = axis;
+
+            calculate_transformation();
         }
 
         std::vector<r_math::Vec4f> &Model::vecs_list()
@@ -23,6 +49,14 @@ namespace reality
         std::vector<int> &Model::index_list()
         {
             return m_index_list;
+        }
+
+        void Model::calculate_transformation()
+        {
+            m_transformation = Mat4f::translate(m_world_position.x,
+                                                m_world_position.y,
+                                                m_world_position.z) *
+                               Mat4f::rotate(m_angle, m_axis);
         }
 
         UnitCubeModel::UnitCubeModel(std::string id)
