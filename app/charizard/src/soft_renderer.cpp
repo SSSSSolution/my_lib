@@ -388,26 +388,6 @@ void draw_triangle(std::shared_ptr<FrameBuffer> image, const Recti &sub_rect, r_
     draw_triangle_help(image, sub_rect, p1, p2, p3, sample, color);
 }
 
-// primitive
-Primitive::Primitive(std::vector<Vec4f> &vecs)
-    : m_vecs(vecs)
-{}
-
-void Primitive::transform(Mat4f mat4)
-{
-    for (auto vec4 : m_vecs)
-    {
-        auto t_vec4 = mat4 * vec4;
-        m_project_vecs.push_back(Vec2f(t_vec4.x, t_vec4.y));
-    }
-}
-
-// triangle primitive
-TrianglePrimitvie::TrianglePrimitvie(std::vector<Vec4f> &vecs)
-    : Primitive(vecs)
-{
-    assert(m_vecs.size() == 3);
-}
 
 // soft renderer
 SoftRenderer::SoftRenderer()
@@ -439,19 +419,11 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
         std::vector<Vec4f> model_vecs = model->vecs_list();
         std::vector<int> model_indexs = model->index_list();
         for (unsigned int i = 0; i < model->index_list().size(); i += 3)
-//        for (unsigned int i = 0; i < 3; i += 3)
         {
             std::vector<Vec4f> vecs;
             vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i) - 1));
             vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i+1) - 1));
             vecs.push_back(camera_transform * model_trans * model_vecs.at(model_indexs.at(i+2) - 1));
-
-//            std::cout << vecs[0].x << ", " << vecs[0].y  << ", "
-//                      << vecs[0].z  << ", " << vecs[0].w << std::endl;
-//            std::cout << vecs[1].x << ", " << vecs[1].y  << ", "
-//                      << vecs[1].z  << ", " << vecs[1].w << std::endl;
-//            std::cout << vecs[2].x << ", " << vecs[2].y << ", "
-//                      << vecs[2].z << ", " << vecs[2].w << std::endl;
 
             primitives.push_back(Primitive(vecs));
         }
@@ -467,12 +439,6 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
             v.z = v.z / v.w;
             v.w = v.w / v.w;
         }
-//        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
-//                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
-//        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
-//                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
-//        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
-//                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
     }
 
     // NDC -> screen
@@ -494,18 +460,6 @@ void SoftRenderer::draw(std::shared_ptr<FrameBuffer> fb)
         draw_line_DDA(fb, A, B, 0xffff0000);
         draw_line_DDA(fb, B, C, 0xffff0000);
         draw_line_DDA(fb, C, A, 0xffff0000);
-//        std::cout << p.m_vecs[0].x<< ", " << p.m_vecs[0].y<< ", "
-//                  << p.m_vecs[0].z << ", " << p.m_vecs[0].w<< std::endl;
-//        std::cout << p.m_vecs[1].x<< ", " << p.m_vecs[1].y<< ", "
-//                  << p.m_vecs[1].z<< ", " << p.m_vecs[1].w << std::endl;
-//        std::cout << p.m_vecs[2].x<< ", " << p.m_vecs[2].y << ", "
-//                  << p.m_vecs[2].z << ", " << p.m_vecs[2].w<< std::endl;
-//        std::cout << p.m_vecs[0].x / p.m_vecs[0].w << ", " << p.m_vecs[0].y / p.m_vecs[0].w << ", "
-//                  << p.m_vecs[0].z / p.m_vecs[0].w << ", " << p.m_vecs[0].w / p.m_vecs[0].w << std::endl;
-//        std::cout << p.m_vecs[1].x / p.m_vecs[1].w << ", " << p.m_vecs[1].y / p.m_vecs[1].w << ", "
-//                  << p.m_vecs[1].z / p.m_vecs[1].w << ", " << p.m_vecs[1].w / p.m_vecs[1].w << std::endl;
-//        std::cout << p.m_vecs[2].x / p.m_vecs[2].w << ", " << p.m_vecs[2].y / p.m_vecs[2].w << ", "
-//                  << p.m_vecs[2].z / p.m_vecs[2].w << ", " << p.m_vecs[2].w / p.m_vecs[2].w << std::endl;
     }
 
 

@@ -13,6 +13,12 @@ add_library(r_math
     include/r_math/rect.h
     src/mat4.cpp
     include/r_math/mat4.h
+    src/cube.cpp
+    include/r_math/cube.h
+    src/segment3.cpp
+    include/r_math/segment3.h
+    src/plane3.cpp
+    include/r_math/plane3.h
 )
 target_include_directories(r_math PUBLIC include)
 

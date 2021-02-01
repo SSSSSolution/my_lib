@@ -45,22 +45,6 @@ void draw_line_Bresenham(std::shared_ptr<FrameBuffer> fb, r_math::Vec2f start, r
  */
 void draw_triangle(std::shared_ptr<FrameBuffer> fb, const r_math::Recti &sub_rect, r_math::Vec2f &p1, r_math::Vec2f &p2, r_math::Vec2f &p3, SampleCount sample, char32_t color);
 
-struct Primitive
-{
-    Primitive(std::vector<r_math::Vec4f> &vecs);
-
-    void transform(r_math::Mat4f mat4);
-
-    std::vector<r_math::Vec4f> m_vecs;
-    std::vector<r_math::Vec2f> m_project_vecs;
-};
-
-struct TrianglePrimitvie : public Primitive
-{
-    TrianglePrimitvie(std::vector<r_math::Vec4f> &vecs);
-
-};
-
 class SoftRenderer
 {
 public:

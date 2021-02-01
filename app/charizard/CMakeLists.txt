@@ -48,6 +48,8 @@ add_executable(charizard
   include/charizard/scenes.h
   src/types.cpp
   include/charizard/types.h
+  src/clipper.cpp
+  include/charizard/clipper.h
 )
 
 target_link_libraries(charizard
