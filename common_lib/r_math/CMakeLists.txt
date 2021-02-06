@@ -15,8 +15,8 @@ add_library(r_math
     include/r_math/mat4.h
     src/cube.cpp
     include/r_math/cube.h
-    src/segment3.cpp
-    include/r_math/segment3.h
+    #src/segment3.cpp
+    #include/r_math/segment3.h
     src/plane3.cpp
     include/r_math/plane3.h
 )

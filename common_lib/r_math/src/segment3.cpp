@@ -1,4 +1,4 @@
-#include "r_math/segment.h"
+#include "r_math/segment3.h"
 
 namespace reality
 {
